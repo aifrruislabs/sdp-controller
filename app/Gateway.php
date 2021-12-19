@@ -9,7 +9,7 @@ class Gateway extends Model
     //Fillables
     protected $fillable = [
 
-    	'userId', 'gatewayTitle', 'gatewayInfo', 'gatewayIP', 'gatewayAccessToken',
+    	'userId', 'gatewayTitle', 'gatewayInfo', 'gatewayIP', 'gatewayAccessToken', 'gatewayServicesList'
 
     ];
 }

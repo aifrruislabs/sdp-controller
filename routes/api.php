@@ -41,6 +41,21 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//User Delete Service Gateway
+	Route::post('/user/gateway/delete/service', ['uses' => 'GatewayController@userGatewayDeleteService']);
+
+	//User Add Service to Gateway
+	Route::post('/user/gateway/add/service', ['uses' => 'GatewayController@userGatewayAddService']);
+
+	//Get Gateway Services
+	Route::get('/user/get/gateway/service/{gatewayId}', ['uses' => 'GatewayController@userGetGatewayService']);
+
+	//Update Gateway
+	Route::patch('/user/gateway/update', ['uses' => 'GatewayController@userUpdateGateway']);
+
+	//Delete Gateway
+	Route::delete('/user/gateway/delete/{gatewayId}', ['uses' => 'GatewayController@userGatewayDelete']);
+
 	//Get All Services
 	Route::get('/user/services/get/all', ['uses' => 'ServiceController@userGetAllServices']);
 

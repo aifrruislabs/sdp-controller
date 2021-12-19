@@ -23,7 +23,8 @@ class CreateGatewaysTable extends Migration
 
             $table->string('gatewayIP')->nullable();
             $table->longText('gatewayAccessToken')->nullable();
-            
+            $table->longText('gatewayServicesList')->nullable();
+
             $table->timestamps();
         });
     }
