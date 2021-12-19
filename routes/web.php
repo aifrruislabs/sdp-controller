@@ -12,5 +12,9 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+
+    return response()->json(array(
+    			'status' => true, 
+    			'message' => 'Welcome to SDP Controller API by Aifrruis Labs'), 200);
+    
 });
