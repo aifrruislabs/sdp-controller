@@ -8,10 +8,42 @@ use Illuminate\Http\Request;
 class ServiceController extends Controller
 {
 
+    //adminServiceUpdateService
+    public function adminServiceUpdateService(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,
+                        [
+                            'serviceId' => 'required',
+                            'serviceTitle' => 'required',
+                            'servicePort' => 'required'
+                        ]);
+
+        //Updating Service
+        $updateService = Service::find($request->serviceId);
+        $updateService->serviceTitle = $request->serviceTitle;
+        $updateService->serviceInfo = $request->serviceInfo;
+        $updateService->servicePort = $request->servicePort;
+
+        if ($updateService->update()) {
+            return response()->json(array('status' => true, 'message' => 'Service Was Updated Successfully'), 200);
+        }else {
+            return response()->json(array('status' => false, 'error_code' => 'SRV_ERR', 'message' => 'Failed to Update Service'), 200);
+        }
+    }
+
+    //adminServiceDelete
+    public function adminServiceDelete($serviceId)
+    {
+        $deleteService = Service::find($serviceId)->delete();
+
+        return response()->json(array('status' => true, 'message' => 'Service was Deleted Successfully'), 200);
+    }
+
     //adminGetAllServices
     public function adminGetAllServices()
     {
-        $services = Service::orderBy('servicePort', 'ASC')->get();
+        $services = Service::orderBy('servicePort', 'DESC')->get();
 
         return response()->json(array('status' => true, 'data' => $services), 200);
     }
@@ -19,7 +51,7 @@ class ServiceController extends Controller
     //userGetAllServices
     public function userGetAllServices() 
     {
-        $services = Service::orderBy('servicePort', 'ASC')->get();
+        $services = Service::orderBy('servicePort', 'DESC')->get();
 
         return response()->json(array('status' => true, 'data' => $services), 200);
     }

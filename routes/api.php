@@ -22,6 +22,12 @@ use Illuminate\Http\Request;
 //Super Admin Middleware level
 Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], function () {
 
+	//Update Service
+	Route::patch('/admin/service/update', ['uses' => 'ServiceController@adminServiceUpdateService']);
+
+	//Delete Service
+	Route::delete('/admin/service/delete/{serviceId}', ['uses' => 'ServiceController@adminServiceDelete']);
+
 	//Get All Services
 	Route::get('/admin/services/get/all', ['uses' => 'ServiceController@adminGetAllServices']);
 
