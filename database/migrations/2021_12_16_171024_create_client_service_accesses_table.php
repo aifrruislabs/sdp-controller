@@ -15,6 +15,13 @@ class CreateClientServiceAccessesTable extends Migration
     {
         Schema::create('client_service_accesses', function (Blueprint $table) {
             $table->bigIncrements('id');
+            
+            $table->string('userId')->nullable();
+
+            $table->string('gatewayId')->nullable();
+            $table->string('serviceId')->nullable();
+            $table->string('clientId')->nullable();
+
             $table->timestamps();
         });
     }

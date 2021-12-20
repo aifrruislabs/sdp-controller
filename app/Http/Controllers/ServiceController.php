@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-
     //adminServiceUpdateService
     public function adminServiceUpdateService(Request $request)
     {
@@ -16,7 +15,8 @@ class ServiceController extends Controller
                         [
                             'serviceId' => 'required',
                             'serviceTitle' => 'required',
-                            'servicePort' => 'required'
+                            'servicePort' => 'required',
+                            'serviceScore' => 'required'
                         ]);
 
         //Updating Service
@@ -24,6 +24,7 @@ class ServiceController extends Controller
         $updateService->serviceTitle = $request->serviceTitle;
         $updateService->serviceInfo = $request->serviceInfo;
         $updateService->servicePort = $request->servicePort;
+        $updateService->serviceScore = $request->serviceScore;
 
         if ($updateService->update()) {
             return response()->json(array('status' => true, 'message' => 'Service Was Updated Successfully'), 200);
@@ -43,7 +44,7 @@ class ServiceController extends Controller
     //adminGetAllServices
     public function adminGetAllServices()
     {
-        $services = Service::orderBy('servicePort', 'DESC')->get();
+        $services = Service::orderBy('created_at', 'DESC')->get();
 
         return response()->json(array('status' => true, 'data' => $services), 200);
     }
@@ -51,7 +52,7 @@ class ServiceController extends Controller
     //userGetAllServices
     public function userGetAllServices() 
     {
-        $services = Service::orderBy('servicePort', 'DESC')->get();
+        $services = Service::orderBy('created_at', 'DESC')->get();
 
         return response()->json(array('status' => true, 'data' => $services), 200);
     }
@@ -63,7 +64,8 @@ class ServiceController extends Controller
     	$this->validate($request,
     					[
     						'serviceTitle' => 'required',
-    						'servicePort' => 'required'
+    						'servicePort' => 'required',
+                            'serviceScore' => 'required'
     					]);
 
     	$userId = $request->header('userId');
@@ -78,6 +80,7 @@ class ServiceController extends Controller
     	$newService->serviceTitle = $request->serviceTitle;
     	$newService->serviceInfo = $request->serviceInfo;
     	$newService->servicePort = $request->servicePort;
+        $newService->serviceScore = $request->serviceScore;
 
     	if ($newService->save()) {
     		return response()->json(array('status' => true, 'data' => $newService), 201);

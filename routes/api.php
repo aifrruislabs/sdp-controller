@@ -41,6 +41,24 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Add Service to Client
+	Route::post('/user/gateway/client/add/service', ['uses' => 'ClientController@addGatewayClientAddService']);
+
+	//Delete Gateway Service Access
+	Route::post('/user/delete/gateway/client/service', ['uses' => 'ClientController@uDltGatewayClientAccess']);
+
+	//Get Client Gateway Services List
+	Route::get('/user/gateway/client/services/list/{clientId}', ['uses' => 'ClientController@uGtwyClientServiceList']);
+
+	//Delete Client
+	Route::delete('/user/client/delete/{clientId}', ['uses' => 'ClientController@userDeleteClient']);
+
+	//Get All Clients
+	Route::get('/user/sdp/get/all/clients', ['uses' => 'ClientController@userSdpGetAllClients']);
+
+	//Create New Client
+	Route::post('/user/sdp/create/client', ['uses' => 'ClientController@userSDPCreateClient']);
+
 	//User Delete Service Gateway
 	Route::post('/user/gateway/delete/service', ['uses' => 'GatewayController@userGatewayDeleteService']);
 

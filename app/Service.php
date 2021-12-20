@@ -9,7 +9,7 @@ class Service extends Model
     //Fillables
     protected $fillable = [
 
-    	'userId', 'serviceTitle', 'serviceInfo', 'servicePort',
+    	'userId', 'serviceTitle', 'serviceInfo', 'servicePort', 'serviceScore',
 
     ];
 }

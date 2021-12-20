@@ -22,6 +22,7 @@ class CreateServicesTable extends Migration
             $table->string('serviceInfo')->nullable();
 
             $table->string('servicePort')->nullable();
+            $table->string('serviceScore')->nullable();
 
             $table->timestamps();
         });
