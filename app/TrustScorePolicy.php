@@ -4,12 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TrustScoreWeight extends Model
+class TrustScorePolicy extends Model
 {
     //Fillables
     protected $fillable = [
 
-    	'userId', 'scoreFactorId', 'scoreFactorPercent',
+    		'userId', 'serviceId', 'scoreFactorId', 'scorePercent'
 
     ];
 }

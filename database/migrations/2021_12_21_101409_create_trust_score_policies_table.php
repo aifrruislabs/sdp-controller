@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTrustScoreFactorsTable extends Migration
+class CreateTrustScorePoliciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,15 @@ class CreateTrustScoreFactorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('trust_score_factors', function (Blueprint $table) {
+        Schema::create('trust_score_policies', function (Blueprint $table) {
             $table->bigIncrements('id');
+
+            $table->string('userId');
+
+            $table->string('serviceId')->nullable();
+            $table->string('scoreFactorId')->nullable();
+            $table->string('scorePercent')->nullable();
+
             $table->timestamps();
         });
     }
@@ -26,6 +33,6 @@ class CreateTrustScoreFactorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trust_score_factors');
+        Schema::dropIfExists('trust_score_policies');
     }
 }

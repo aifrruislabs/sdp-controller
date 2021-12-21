@@ -18,17 +18,8 @@ class CreateTrustScoreWeightsTable extends Migration
 
             $table->integer('userId');
 
-            $table->string('scoreWeight1')->nullable();
-            $table->string('scoreWeight2')->nullable();
-            $table->string('scoreWeight3')->nullable();
-            $table->string('scoreWeight4')->nullable();
-            $table->string('scoreWeight5')->nullable();
-
-            $table->string('scoreWeight6')->nullable();
-            $table->string('scoreWeight7')->nullable();
-            $table->string('scoreWeight8')->nullable();
-            $table->string('scoreWeight9')->nullable();
-            $table->string('scoreWeight10')->nullable();
+            $table->string('scoreFactorId')->nullable();
+            $table->string('scoreFactorPercent')->nullable();
 
             $table->timestamps();
         });

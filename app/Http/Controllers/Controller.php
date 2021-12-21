@@ -16,6 +16,12 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    //userTrustScoreFactors
+    public function userGetTrustScoreFactors()
+    {
+        return response()->json(array('status' => true, 'data' => getScoreFactorsList()), 200);
+    }
+
     //accountLogout
     public function accountLogout(Request $request)
     {

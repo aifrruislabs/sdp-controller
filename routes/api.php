@@ -41,6 +41,21 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Get All Trust Score Policies
+	Route::get('/user/trust/policies/get/all', ['uses' => 'TrustScorePolicyController@usertrustGetAllPolicies']);
+
+	//Create New Trust Score Policy
+	Route::post('/user/post/trust/score/policy', ['uses' => 'TrustScorePolicyController@userPostTrustScorePolicy']);
+
+	//Get All Trust Score Factor Weights
+	Route::get('/user/get/all/trust/score/factor/weights', ['uses' => 'TrustScoreWeightController@getAllFactorsWeights']);
+
+	//Add New Trust Score Factor Weight
+	Route::post('/user/post/trust/score/factor/weight', ['uses' => 'TrustScoreWeightController@pstTrustScoreWghtfrFactor']);
+
+	//Get Trust Score Factors
+	Route::get('/user/get/trust/score/factors', ['uses' => 'Controller@userGetTrustScoreFactors']);
+
 	//Add Service to Client
 	Route::post('/user/gateway/client/add/service', ['uses' => 'ClientController@addGatewayClientAddService']);
 
