@@ -59,20 +59,48 @@ class ClientController extends Controller
             //Get Client Granted Services
             $grantedServicesList = $this->clientPullGrantedServices($request)->original['data'];
 
+            //Get Gateway ID from Client 
+            $clientData = Client::where('clientId', $clientId)->get()->toArray();
+            $gatewayId = $clientData['0']['gatewayId'];
+
+            //Gatewau Data
+            $gatewayData = Gateway::where('id', $gatewayId)->get()->toArray();
+            $gatewayIP = $gatewayData['0']['gatewayIP'];
+
             //Generate fwknop command from services list
             $clientPublicIp = $request->client_public_ip;
-            $gatewayServerIP = "";
+            $gatewayServerIP = $gatewayIP;
             $servicesProtosPortsList = "";
+
+            foreach ($grantedServicesList as $serviceD) {
+                $serviceProto = $serviceD['serviceProto'];
+                $servicePort = $serviceD['servicePort'];
+
+                $servicesProtosPortsList .= $serviceProto."/".$servicePort.",";                
+            }
+
+            //Remove Last , in $servicesProtosPortsList
+            $servicesProtosPortsList = substr($servicesProtosPortsList, 0, -1);
 
             $fwknopCmd = "fwknop -A ".$servicesProtosPortsList." -a ".$clientPublicIp.
                             " -D ".$gatewayServerIP." --key-gen --use-hmac";
 
             $encryptionHmacKeys = exec($fwknopCmd);
 
-            // $encryptionKey = exec("grep KEY_BASE64 ". $encryptionHmacKeys);
-            // $hmacKey = exec("grep HMAC_KEY_BASE64 ". $encryptionHmacKeys);
-
-            return response()->json(array('grantedServicesList' => $grantedServicesList), 200);
+            $encryptionKeyRes1 = explode("HMAC_KEY_BASE64:", $encryptionHmacKeys);
+            $encryptionKey = trim(str_replace("KEY_BASE64:", "", $encryptionKeyRes1[0]));
+            $hmacKey = trim($encryptionKeyRes1[1]);
+            
+            //Update Encryption Key and Hmac key in Database
+            $updateClientkeys = Client::find($clientData['0']['id']);
+            $updateClientkeys->encryptionKey = $encryptionKey;
+            $updateClientkeys->hmacKey = $hmacKey;
+            $updateClientkeys->update();
+            
+            return response()->json(array(
+                'clientId' => $clientId,
+                'encryptionKey' => $encryptionKey,
+                'hmacKey' => $hmacKey), 200);
 
         }else {
             return response()->json(array('status' => false, 'error_code' => 'CLIENT_NOT_EXIST'), 200);
