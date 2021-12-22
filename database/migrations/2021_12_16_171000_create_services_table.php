@@ -21,6 +21,7 @@ class CreateServicesTable extends Migration
             $table->string('serviceTitle')->nullable();
             $table->string('serviceInfo')->nullable();
 
+            $table->string('serviceProto')->nullable();
             $table->string('servicePort')->nullable();
             $table->string('serviceScore')->nullable();
 

@@ -85,9 +85,12 @@ class ClientController extends Controller
             $fwknopCmd = "fwknop -A ".$servicesProtosPortsList." -a ".$clientPublicIp.
                             " -D ".$gatewayServerIP." --key-gen --use-hmac";
 
-            $encryptionHmacKeys = exec($fwknopCmd);
+            $cmdOutput = "";
+            $cmdRetval = "";
 
-            $encryptionKeyRes1 = explode("HMAC_KEY_BASE64:", $encryptionHmacKeys);
+            exec($fwknopCmd, $cmdOutput, $cmdRetval);
+
+            $encryptionKeyRes1 = explode("HMAC_KEY_BASE64:", $cmdOutput);
             $encryptionKey = trim(str_replace("KEY_BASE64:", "", $encryptionKeyRes1[0]));
             $hmacKey = trim($encryptionKeyRes1[1]);
             
