@@ -109,8 +109,26 @@ Route::group(['prefix' => 'v1', 'middleware' => 'userAuthMiddleware'], function 
 
 });
 
+//Routes Protected with Middleware
+//Client Middleware Level
+Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], function () {
+
+	//Generate Encryption Key and Hmac key
+	Route::post('/client/generate/encryption/hmac/keys', ['uses' => 'ClientController@gnrtEncryptionHmacKey']);
+
+	//Logout Clear Trust Score
+	Route::get('/client/logout/clear/trust/score', ['uses' => 'ClientController@logoutClearTrustScore']);
+
+	//Pull Granted Services List
+	Route::get('/client/pull/granted/services', ['uses' => 'ClientController@clientPullGrantedServices']);
+	
+});
+
 //Unprotected Routes
 Route::group(['prefix' => 'v1'], function () {
+
+	//validate Client Credentials
+	Route::post('/validate/client/credentials', ['uses' => 'ClientController@validateClientCredentials']);
 
 	//Get Gateway Stanzas
 	Route::get('/get/confs/stanzas', ['uses' => 'GatewayController@getConfsStanzas']);

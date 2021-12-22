@@ -11,7 +11,7 @@ class Client extends Model
 
     	'userId', 'clientId', 'firstName', 'middleName', 'lastName', 'username', 'password',
 
-    	'totalTrustScore', 'totalAccessScore', 'encryptionKey', 'hmacKey'
+    	'accessToken', 'totalTrustScore', 'encryptionKey', 'hmacKey'
 
     ];
 }

@@ -27,8 +27,8 @@ class CreateClientsTable extends Migration
             $table->string('username')->nullable();
             $table->longText('password')->nullable();
 
+            $table->longText('accessToken')->nullable();
             $table->string('totalTrustScore')->nullable();
-            $table->string('totalAccessScore')->nullable();
             $table->longText('encryptionKey')->nullable();
             $table->longText('hmacKey')->nullable();
 

@@ -5,11 +5,259 @@ namespace App\Http\Controllers;
 use App\Client;
 use App\Gateway;
 use App\Service;
+use App\TrustScoreWeight;
 use App\ClientServiceAccess;
+
+use App\TrustScorePolicy;
+use App\TrustScoreTracker;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
+    //gnrtEncryptionHmacKey
+    public function gnrtEncryptionHmacKey(Request $request)
+    {
+        $clientId = $request->header('clientId');
+
+        //Get Client Data
+        $clientData = Client::where('clientId', $clientId)->get()->toArray();
+
+        if (sizeof($clientData) == 1) {
+
+            //Get Client Granted Services
+            $grantedServicesList = $this->clientPullGrantedServices($request)->original['data'];
+
+            //Generate fwknop command from services list
+            $clientPublicIp = "";
+            $gatewayServerIP = "";
+            $servicesProtosPortsList = "";
+
+            $fwknopCmd = "fwknop -A ".$servicesProtosPortsList." -a ".$clientPublicIp.
+                            " -D ".$gatewayServerIP." --key-gen --use-hmac";
+
+            $encryptionHmacKeys = exec($fwknopCmd);
+
+            // $encryptionKey = exec("grep KEY_BASE64 ". $encryptionHmacKeys);
+            // $hmacKey = exec("grep HMAC_KEY_BASE64 ". $encryptionHmacKeys);
+
+            return response()->json(array('grantedServicesList' => $grantedServicesList), 200);
+
+        }else {
+            return response()->json(array('status' => false, 'error_code' => 'CLIENT_NOT_EXIST'), 200);
+        }
+    }
+
+    //logoutClearTrustScore
+    public function logoutClearTrustScore(Request $request)
+    {
+        $clientId = $request->header('clientId');
+
+        //Clear Client Trust Score to Zero
+        $clientData = Client::where('clientId', $clientId)->get()->toArray();
+
+        if (sizeof($clientData) == 1) {
+            $updateClientTrustScore = Client::find($clientData['0']['id']);
+            $updateClientTrustScore->accessToken = "";
+            $updateClientTrustScore->totalTrustScore = "0";
+            $updateClientTrustScore->update();
+
+            $clientAdminUserId = $clientData['0']['userId'];
+
+            //Clear Tracks
+            $getTracksToClear = TrustScoreTracker::where([
+                                    ['userId', '=', $clientAdminUserId],
+                                    ['clientId', '=', $clientId]
+                                    ])->get();
+
+            foreach ($getTracksToClear as $track) {
+                TrustScoreTracker::find($track->id)->delete();
+            }
+
+            return response()->json(array('status' => true), 200);
+
+        }else {
+            return response()->json(array('status' => false), 200);
+        }
+    }
+
+    //clientPullGrantedServices
+    public function clientPullGrantedServices(Request $request)
+    {
+        $clientId = $request->header('clientId');
+
+        $grantedServicesList = array();
+
+        //Check Client Trust Score
+        $clientTrustScoreQ = Client::where('clientId', $clientId)->get()->toArray();
+
+        if (sizeof($clientTrustScoreQ) == 1) {
+
+            $trustScoreCount = intval($clientTrustScoreQ['0']['totalTrustScore']);
+            $clientAdminUserId = $clientTrustScoreQ['0']['userId'];
+            $clientTrustScore = $clientTrustScoreQ['0']['totalTrustScore'];
+
+            if ($trustScoreCount != 0) {
+
+                //Check on Trust Score Policies for Allowed Services in 
+                //this Score Granted 
+                foreach (getScoreFactorsList() as $factorRes) {
+                    $policiesOnUserCredentialV = TrustScorePolicy::where([
+                                                    ['userId', '=', $clientAdminUserId],
+                                                    ['scoreFactorId', '=', $factorRes['id']],
+                                                    ['scorePercent', '<=', $trustScoreCount]
+                                                    ])->get();
+
+                    foreach ($policiesOnUserCredentialV as $policyServ) {
+                        $grantedServicesList[] = Service::where('id', $policyServ->serviceId)
+                                                        ->get()
+                                                        ->toArray()[0];    
+                    }
+            
+                }
+
+                return response()->json(array(
+                            'status' => true, 
+                            'clientTrustScore' => $clientTrustScore,
+                            'data' => $grantedServicesList), 200);    
+            }else {
+                return response()->json(array('status' => false, 'data' => $grantedServicesList), 200);    
+            }
+
+        }else {
+            return response()->json(array('status' => false, 'data' => $grantedServicesList), 200);
+        }
+    }
+
+    //validateClientCredentials
+    public function validateClientCredentials(Request $request)
+    {
+        //Inputs Validation
+        $this->validate($request,
+                    [
+                        'username' => 'required',
+                        'password' => 'required',
+                        'client_public_ip' => 'required'
+                    ]);
+
+        //Check if Client Id or username Exists
+        $checkClientIdUsernameQuery = Client::where([
+                                    ['username', '=', $request->username]
+                                    ])->orWhere([
+                                    ['clientId', '=', $request->username]
+                                    ])->get()->toArray();
+
+        if (sizeof($checkClientIdUsernameQuery) == 1) {
+
+            //Verify Password
+            if (Hash::check($request->password, $checkClientIdUsernameQuery['0']['password'])) {
+                //If Passed Grant Trust Score to Client for this Step
+                $clientId = $checkClientIdUsernameQuery['0']['clientId'];
+                $clientAdminUserId = $checkClientIdUsernameQuery['0']['userId'];
+
+                //Generate Client Access Token
+                $accessToken = sha1($clientId.$checkClientIdUsernameQuery['0']['updated_at'].rand(100, 10000));
+
+                //Update Access Token to Database
+                $updateAccessToken = Client::find($checkClientIdUsernameQuery['0']['id']);
+                $updateAccessToken->accessToken = $accessToken;
+                $updateAccessToken->update();
+
+                $scoreFactorsUserList = TrustScoreWeight::where([
+                                            ['userId', '=', $clientAdminUserId]
+                                        ])->get();
+
+                $getScorePercentQuery = TrustScoreWeight::where([
+                                            ['userId', '=', $clientAdminUserId],
+                                            ['scoreFactorId', '=', 1]
+                                        ])->get()->toArray();
+
+                if (sizeof($getScorePercentQuery) == 1) {
+
+                    $scorePercent = $getScorePercentQuery['0']['scoreFactorPercent'];
+
+                    //Check Factor in Trust Score Tracker
+                    $checkFactorInTrustTracker = TrustScoreTracker::where([
+                                                    ['clientId', '=', $clientId],
+                                                    ['trustScoreFactorId', '=', 1]
+                                                ])->get();
+
+                    if (sizeof($checkFactorInTrustTracker) == 0) {
+                        //Add Score Track in TrustScore Tracker
+                        $addScoreTrack = new TrustScoreTracker();
+                        $addScoreTrack->userId = $clientAdminUserId;
+                        $addScoreTrack->clientId = $clientId;
+                        $addScoreTrack->trustScoreFactorId = 1;
+                        $addScoreTrack->percentScored = intval($scorePercent);
+                        $addScoreTrack->save();
+
+                        //Add New Score to User || Update Client Score
+                        $newClientTrustScore = intval($checkClientIdUsernameQuery['0']['totalTrustScore'])  
+                                                + intval($scorePercent);
+
+                        //Update Client Score
+                        $updateClientScore = Client::find($checkClientIdUsernameQuery['0']['id']);
+                        $updateClientScore->totalTrustScore = $newClientTrustScore;
+                        $updateClientScore->update();
+
+                    }
+
+                }
+                
+                //Check for Next Factor in the List
+                $scoreFactorIdsList = array();
+
+                foreach ($scoreFactorsUserList as $factorIdRes) {
+                    $scoreFactorIdsList[] = $factorIdRes->scoreFactorId;
+                }
+
+                //Remove Ids on Tracker
+                $scoreFactorIdsRes = $this->removeIdsOnTracker($scoreFactorIdsList, $clientId);
+
+                return response()->json(array(
+                                    'status' => true, 
+                                    'clientId' => $clientId,
+                                    'clientToken' => $accessToken,
+                                    'scoreFactorIdsList' => $scoreFactorIdsRes), 200);
+                
+            }else {
+                return response()->json(array('status' => false, 'error_code' => 'WRONG_PWD'), 200);
+            }
+
+        }else {
+            return response()->json(array('status' => false, 'error_code' => 'USER_NOT_EXISTS'), 200);
+        }
+    }
+
+    //removeIdsOnTracker
+    private function removeIdsOnTracker($scoreFactorIdsList, $clientId)
+    {
+        $responseArr = array();
+        $trackerIdsL = array();
+        $trackerIdsList = TrustScoreTracker::where('clientId', $clientId)->get();
+    
+        foreach ($trackerIdsList as $trackerId) {
+            $trackerIdsL[] = $trackerId->trustScoreFactorId;
+        }
+
+        foreach ($scoreFactorIdsList as $factorId) {
+            
+            $addTo = 0;
+            if (in_array($factorId, $trackerIdsL)) {
+                $addTo = 1;
+            }
+
+            if ($addTo == 0) {
+                $responseArr[] = $factorId;
+            }
+
+        }
+
+        return $responseArr;
+    }
+
+
     //addGatewayClientAddService
     public function addGatewayClientAddService(Request $request)
     {
@@ -43,24 +291,7 @@ class ClientController extends Controller
             $newClientServiceAccess->clientId = $clientSingleId;
 
             if ($newClientServiceAccess->save()) {
-                //Update Total Access Score
-                $getAllDataGatClnt = ClientServiceAccess::where([
-                                        ['gatewayId', '=', $request->gatewayId],
-                                        ['clientId', '=', $clientSingleId]
-                                        ])->get();
-
-                $totalTAS = 0;
-                foreach ($getAllDataGatClnt as $GatClnt) {
-                    $serviceData = Service::where('id', $GatClnt->serviceId)->get()->toArray();
-
-                    $totalTAS += intval($serviceData['0']['serviceScore']);
-                }
-
-                //Update Client Score
-                $updateClientTAS = Client::find($clientSingleId);
-                $updateClientTAS->totalAccessScore = $totalTAS;
-                $updateClientTAS->update();
-
+                
                 return response()->json(array(
                     'status' => true, 
                     'message' => 'Client Service was Added Successfully'), 200);
@@ -90,28 +321,6 @@ class ClientController extends Controller
 
         //Deleting Access
         $deleteAcces = ClientServiceAccess::find($request->csaId)->delete();
-
-        //Get Client Single Id
-        $clientSingleIdQuery = Client::where('clientId', $request->clientId)->get()->toArray();
-        $clientSingleId = $clientSingleIdQuery['0']['id'];
-
-        //Update Total Access Score
-        $getAllDataGatClnt = ClientServiceAccess::where([
-                                ['gatewayId', '=', $request->gatewayId],
-                                ['clientId', '=', $clientSingleId]
-                                ])->get();
-
-        $totalTAS = 0;
-        foreach ($getAllDataGatClnt as $GatClnt) {
-            $serviceData = Service::where('id', $GatClnt->serviceId)->get()->toArray();
-
-            $totalTAS += intval($serviceData['0']['serviceScore']);
-        }
-
-        //Update Client Score
-        $updateClientTAS = Client::find($clientSingleId);
-        $updateClientTAS->totalAccessScore = $totalTAS;
-        $updateClientTAS->update();
 
         return response()->json(array('status' => true, 'message' => 'Access was Removed Successfully'), 200);
     }
