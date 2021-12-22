@@ -90,7 +90,7 @@ class ClientController extends Controller
 
             exec($fwknopCmd, $cmdOutput, $cmdRetval);
 
-            $encryptionKeyRes1 = explode("HMAC_KEY_BASE64:", $cmdOutput);
+            $encryptionKeyRes1 = explode("HMAC_KEY_BASE64:", $cmdOutput[0]);
             $encryptionKey = trim(str_replace("KEY_BASE64:", "", $encryptionKeyRes1[0]));
             $hmacKey = trim($encryptionKeyRes1[1]);
             
