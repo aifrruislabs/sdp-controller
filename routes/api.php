@@ -113,6 +113,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'userAuthMiddleware'], function 
 //Client Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], function () {
 
+	//Get Client Gateway List
+	Route::get('/client/get/gateways/list', ['uses' => 'ClientController@clientGetGatewayList']);
+
 	//Generate Encryption Key and Hmac key
 	Route::post('/client/generate/encryption/hmac/keys', ['uses' => 'ClientController@gnrtEncryptionHmacKey']);
 

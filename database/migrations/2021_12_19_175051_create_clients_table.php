@@ -17,6 +17,7 @@ class CreateClientsTable extends Migration
             $table->bigIncrements('id');
      
             $table->string('userId');
+            $table->string('gatewayId')->nullable();
 
             $table->string('clientId')->nullable();
 

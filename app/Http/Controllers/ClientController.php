@@ -16,6 +16,36 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
+    //clientGetGatewayList
+    public function clientGetGatewayList(Request $request)
+    {
+        $clientId = $request->header('clientId');
+
+        $gatewaysWithAccess = ClientServiceAccess::where('clientId', $clientId)
+                                ->get()->toArray();
+
+        if (sizeof($gatewaysWithAccess) != 0) {
+
+            $gatewaysArrlist = array();
+            $gatewaysDatalist = array();
+
+            foreach ($gatewaysWithAccess as $gate) {
+                if (!in_array($gate->gatewayId, $gatewaysArrlist)) {
+                    $gatewaysArrlist = $gate->gatewayId;
+                }
+            }
+
+            foreach ($gatewaysArrlist as $gateId) {
+                $gatewaysDatalist[] = Gateway::where('id', $gateId)->get()->toArray()[0];
+            }
+
+            return response()->json(array('status' => true, 'data' => $gatewaysDatalist), 200);
+
+        }else {
+            return response()->json(array('status' => false, 'error_code' => 'NO_GATEWAY'), 200);
+        }
+    }
+
     //gnrtEncryptionHmacKey
     public function gnrtEncryptionHmacKey(Request $request)
     {
@@ -30,7 +60,7 @@ class ClientController extends Controller
             $grantedServicesList = $this->clientPullGrantedServices($request)->original['data'];
 
             //Generate fwknop command from services list
-            $clientPublicIp = "";
+            $clientPublicIp = $request->client_public_ip;
             $gatewayServerIP = "";
             $servicesProtosPortsList = "";
 
