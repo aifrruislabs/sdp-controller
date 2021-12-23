@@ -147,11 +147,12 @@ class ClientController extends Controller
                 $updateClientkeys->update();
                 
                 $fwknoprcData = "[$gatewayIP] \n ";
-                $fwknoprcData .= "ALLOW_IP \t\t $clientPublicIp \n ";
-                $fwknoprcData .= "ACCESS \t\t $servicesProtosPortsList \n ";
-                $fwknoprcData .= "SPA_SERVER \t\t $gatewayIP \n ";
-                $fwknoprcData .= "KEY_BASE64 \t\t $encryptionKey \n ";
-                $fwknoprcData .= "HMAC_KEY_BASE64 \t\t $hmacKey \n ";
+                $fwknoprcData .= "ALLOW_IP \t $clientPublicIp \n ";
+                $fwknoprcData .= "ACCESS \t $servicesProtosPortsList \n ";
+                $fwknoprcData .= "SPA_SERVER \t $gatewayIP \n ";
+                $fwknoprcData .= "KEY_BASE64 \t $encryptionKey \n ";
+                $fwknoprcData .= "HMAC_KEY_BASE64 \t $hmacKey \n ";
+                $fwknoprcData .= "USE_HMAC \t Y \n ";
 
                 $responseData = array(
                     'status' => true,
