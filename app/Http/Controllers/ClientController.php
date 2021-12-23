@@ -83,16 +83,15 @@ class ClientController extends Controller
             $servicesProtosPortsList = substr($servicesProtosPortsList, 0, -1);
 
             $fwknopCmd = "fwknop -A ".$servicesProtosPortsList." -a ".$clientPublicIp.
-                            " -D ".$gatewayServerIP." --key-gen --use-hmac";
+                            " -D ".$gatewayServerIP." --key-gen --use-hmac --no-rc-file";
 
             $cmdOutput = "";
             $cmdRetval = "";
 
             exec($fwknopCmd, $cmdOutput, $cmdRetval);
 
-            $encryptionKeyRes1 = explode("HMAC_KEY_BASE64:", $cmdOutput[0]);
-            $encryptionKey = trim(str_replace("KEY_BASE64:", "", $encryptionKeyRes1[0]));
-            $hmacKey = trim($encryptionKeyRes1[1]);
+            $encryptionKey = trim(explode("KEY_BASE64:", $cmdOutput[0])[1]);
+            $hmacKey = trim(explode("HMAC_KEY_BASE64:", $cmdOutput[1])[1]);
             
             //Update Encryption Key and Hmac key in Database
             $updateClientkeys = Client::find($clientData['0']['id']);
