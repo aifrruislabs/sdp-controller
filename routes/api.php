@@ -113,6 +113,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'userAuthMiddleware'], function 
 //Client Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], function () {
 
+	//Post Client Gateway for This User
+	Route::post('/post/client/gateway/access/srvc', ['uses' => 'ClientController@pstClntGtwyAccss']);
+
 	//Get Client Gateway List
 	Route::get('/client/get/gateways/list', ['uses' => 'ClientController@clientGetGatewayList']);
 

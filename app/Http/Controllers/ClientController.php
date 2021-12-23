@@ -16,10 +16,38 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
+    //pstClntGtwyAccss
+    public function pstClntGtwyAccss(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,  
+                        [
+                            'gatewayId' => 'required'
+                        ]);
+
+        $clientId = $request->header('clientId');
+
+        $clientData = Client::where('clientId', $clientId)->get()->toArray();
+
+        if (sizeof($clientData) == 1) {
+            $updateClientGateway = Client::find($clientData['0']['id']);
+            $updateClientGateway->gatewayId = $request->gatewayId;
+            $updateClientGateway->update();
+
+            return response()->json(array('status' => true), 200);
+        }else {
+            return response()->json(array('status' => false), 200);
+        }
+    }
+
     //clientGetGatewayList
     public function clientGetGatewayList(Request $request)
     {
-        $clientId = $request->header('clientId');
+        $clientIdS = $request->header('clientId');
+
+        $getClientQ = Client::where('clientId', $clientIdS)->get()->toArray();
+
+        $clientId = $getClientQ['0']['id'];
 
         $gatewaysWithAccess = ClientServiceAccess::where('clientId', $clientId)
                                 ->get()->toArray();
@@ -30,13 +58,24 @@ class ClientController extends Controller
             $gatewaysDatalist = array();
 
             foreach ($gatewaysWithAccess as $gate) {
-                if (!in_array($gate->gatewayId, $gatewaysArrlist)) {
-                    $gatewaysArrlist = $gate->gatewayId;
+
+                if (!in_array($gate['gatewayId'], $gatewaysArrlist)) {
+                    $gatewaysArrlist[] = $gate['gatewayId'];
                 }
             }
 
             foreach ($gatewaysArrlist as $gateId) {
-                $gatewaysDatalist[] = Gateway::where('id', $gateId)->get()->toArray()[0];
+                $gatewayData = Gateway::where('id', $gateId)->get()->toArray()[0];
+
+                $gatewaysDatalist[] = array(
+                                        'id' => $gatewayData['id'], 
+                                        'userId' => $gatewayData['userId'],
+                                        'gatewayTitle' => $gatewayData['gatewayTitle'],
+                                        'gatewayInfo' => $gatewayData['gatewayInfo'],
+                                        'gatewayIP' => $gatewayData['gatewayIP'],
+                                        'gatewayServicesList' => $gatewayData['gatewayServicesList']
+                                        );
+
             }
 
             return response()->json(array('status' => true, 'data' => $gatewaysDatalist), 200);
@@ -49,6 +88,12 @@ class ClientController extends Controller
     //gnrtEncryptionHmacKey
     public function gnrtEncryptionHmacKey(Request $request)
     {
+        //Input Validation
+        $this->validate($request,
+                        [
+                            'client_public_ip' => 'required'
+                        ]);
+
         $clientId = $request->header('clientId');
 
         //Get Client Data
@@ -90,19 +135,40 @@ class ClientController extends Controller
 
             exec($fwknopCmd, $cmdOutput, $cmdRetval);
 
-            $encryptionKey = trim(explode("KEY_BASE64:", $cmdOutput[0])[1]);
-            $hmacKey = trim(explode("HMAC_KEY_BASE64:", $cmdOutput[1])[1]);
-            
-            //Update Encryption Key and Hmac key in Database
-            $updateClientkeys = Client::find($clientData['0']['id']);
-            $updateClientkeys->encryptionKey = $encryptionKey;
-            $updateClientkeys->hmacKey = $hmacKey;
-            $updateClientkeys->update();
-            
-            return response()->json(array(
-                'clientId' => $clientId,
-                'encryptionKey' => $encryptionKey,
-                'hmacKey' => $hmacKey), 200);
+            if (sizeof($cmdOutput) > 1) {
+
+                $encryptionKey = trim(explode("KEY_BASE64:", $cmdOutput[0])[1]);
+                $hmacKey = trim(explode("HMAC_KEY_BASE64:", $cmdOutput[1])[1]);
+                
+                //Update Encryption Key and Hmac key in Database
+                $updateClientkeys = Client::find($clientData['0']['id']);
+                $updateClientkeys->encryptionKey = $encryptionKey;
+                $updateClientkeys->hmacKey = $hmacKey;
+                $updateClientkeys->update();
+                
+                $fwknoprcData = "[$gatewayIP] \n ";
+                $fwknoprcData .= "ALLOW_IP \t\t $clientPublicIp \n ";
+                $fwknoprcData .= "ACCESS \t\t $servicesProtosPortsList \n ";
+                $fwknoprcData .= "SPA_SERVER \t\t $gatewayIP \n ";
+                $fwknoprcData .= "KEY_BASE64 \t\t $encryptionKey \n ";
+                $fwknoprcData .= "HMAC_KEY_BASE64 \t\t $hmacKey \n ";
+
+                return response()->json(array(
+                    'status' => true,
+                    'clientId' => $clientId,
+                    
+                    'allowIp' => $clientPublicIp,
+                    'access' => $servicesProtosPortsList,
+                    'spa_server' => $gatewayIP,
+                    'encryptionKey' => $encryptionKey,
+                    'hmacKey' => $hmacKey,
+                    'fwknoprcData' => $fwknoprcData
+
+                    ), 200);   
+            }else {
+                return response()->json(array(
+                    'status' => false), 200);   
+            }
 
         }else {
             return response()->json(array('status' => false, 'error_code' => 'CLIENT_NOT_EXIST'), 200);
