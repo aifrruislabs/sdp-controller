@@ -153,7 +153,7 @@ class ClientController extends Controller
                 $fwknoprcData .= "KEY_BASE64 \t\t $encryptionKey \n ";
                 $fwknoprcData .= "HMAC_KEY_BASE64 \t\t $hmacKey \n ";
 
-                return response()->json(array(
+                $responseData = array(
                     'status' => true,
                     'clientId' => $clientId,
                     
@@ -164,7 +164,9 @@ class ClientController extends Controller
                     'hmacKey' => $hmacKey,
                     'fwknoprcData' => $fwknoprcData
 
-                    ), 200);   
+                    );
+
+                return response()->json(array('data' => $responseData), 200);   
             }else {
                 return response()->json(array(
                     'status' => false), 200);   
