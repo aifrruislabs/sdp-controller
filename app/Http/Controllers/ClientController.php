@@ -154,6 +154,35 @@ class ClientController extends Controller
                 $fwknoprcData .= "HMAC_KEY_BASE64\t\t$hmacKey\n";
                 $fwknoprcData .= "USE_HMAC\t\tY\n";
 
+                $stanzaConfData = "# Stanza Access Data for $gatewayIP\n";
+                $stanzaConfData .= "SOURCE\t\tANY\n";
+                $stanzaConfData .= "OPEN_PORTS\t\t$servicesProtosPortsList\n";
+                $stanzaConfData .= "REQUIRE_SOURCE_ADDRESS\t\tY\n";
+                $stanzaConfData .= "FW_ACCESS_TIMEOUT\t\t30\n";
+                $stanzaConfData .= "KEY_BASE64\t\t$encryptionKey\n";
+                $stanzaConfData .= "HMAC_KEY_BASE64\t\t$hmacKey\n";
+
+                //Send Curl Request to Gateway to Update Access Conf Stanza
+                // set post fields
+                $post = [
+                    'clientId' => $clientData['0']['id'],
+                    'clientConfName' => $clientData['0']['clientId'].".conf",
+                    'clientConfData' => $stanzaConfData,
+                    'gatewayAccessToken' => $gatewayData['0']['gatewayAccessToken']
+                ];
+
+                $ch = curl_init("http://" . $gatewayIP . ":8000/api/v1/create/update/gateway/stanza");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+
+                // Send Data to Gateway
+                $response = curl_exec($ch);
+
+                // Close the Connection, Release Resources Used
+                curl_close($ch);
+
+                // var_dump($response);
+
                 $responseData = array(
                     'status' => true,
                     'clientId' => $clientId,
