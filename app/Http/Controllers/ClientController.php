@@ -152,7 +152,7 @@ class ClientController extends Controller
                 $fwknoprcData .= "ALLOW_IP\t\t$clientPublicIp\n";
                 $fwknoprcData .= "KEY_BASE64\t\t$encryptionKey\n";
                 $fwknoprcData .= "HMAC_KEY_BASE64\t\t$hmacKey\n";
-                $fwknoprcData .= "USE_HMAC\t\tY\n";
+                $fwknoprcData .= "USE_HMAC\t\tY";
 
                 $stanzaConfData = "### Stanza Access Data for $gatewayIP\n";
                 $stanzaConfData .= "SOURCE\t\tANY\n";
