@@ -160,7 +160,7 @@ class ClientController extends Controller
                 $stanzaConfData .= "REQUIRE_SOURCE_ADDRESS\t\tY\n";
                 $stanzaConfData .= "FW_ACCESS_TIMEOUT\t\t30\n";
                 $stanzaConfData .= "KEY_BASE64\t\t$encryptionKey\n";
-                $stanzaConfData .= "HMAC_KEY_BASE64\t\t$hmacKey\n";
+                $stanzaConfData .= "HMAC_KEY_BASE64\t\t$hmacKey";
 
                 //Send Curl Request to Gateway to Update Access Conf Stanza
                 // set post fields
