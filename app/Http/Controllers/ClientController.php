@@ -183,8 +183,6 @@ class ClientController extends Controller
 
                 // var_dump($response);
 
-                sleep(5);
-
                 $responseData = array(
                     'status' => true,
                     'clientId' => $clientId,
