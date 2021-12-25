@@ -158,7 +158,7 @@ class ClientController extends Controller
                 $stanzaConfData .= "SOURCE\t\tANY\n";
                 $stanzaConfData .= "OPEN_PORTS\t\t$servicesProtosPortsList\n";
                 $stanzaConfData .= "REQUIRE_SOURCE_ADDRESS\t\tY\n";
-                $stanzaConfData .= "FW_ACCESS_TIMEOUT\t\t30\n";
+                $stanzaConfData .= "FW_ACCESS_TIMEOUT\t\t60\n";
                 $stanzaConfData .= "KEY_BASE64\t\t$encryptionKey\n";
                 $stanzaConfData .= "HMAC_KEY_BASE64\t\t$hmacKey";
 
