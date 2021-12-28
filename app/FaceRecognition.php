@@ -9,7 +9,7 @@ class FaceRecognition extends Model
     //Fillables
     protected $fillable = [
 
-    	'userId', 'clientId', 'faceLocation'
+    	'clientId', 'attemptStatus'
 
     ];
 }

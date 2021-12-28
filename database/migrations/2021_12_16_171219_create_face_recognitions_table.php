@@ -16,8 +16,6 @@ class CreateFaceRecognitionsTable extends Migration
         Schema::create('face_recognitions', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->string('userId');
-
             $table->string('clientId');
 
             $table->string('attemptStatus')->nullable();

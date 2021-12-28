@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Get All Faces List
+	Route::get('/user/sdp/get/all/face/rec/list', ['uses' => 'FaceRecognitionController@userSdpGetAllFacesList']);
+
 	//Post Face for Face Recognition
 	Route::post('/user/post/face/recognition/face', ['uses' => 'FaceRecognitionController@userPostNewFaceRec']);
 
@@ -115,6 +118,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'userAuthMiddleware'], function 
 //Routes Protected with Middleware
 //Client Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], function () {
+
+	//Face Recognition Check
+	Route::post('/client/face/recognition/verification', ['uses' => 'ClientController@clntFaceRecognitionVrfcn']);
 
 	//Post Client Gateway for This User
 	Route::post('/post/client/gateway/access/srvc', ['uses' => 'ClientController@pstClntGtwyAccss']);

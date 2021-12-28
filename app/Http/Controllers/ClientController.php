@@ -16,6 +16,59 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
+    //clntFaceRecognitionVrfcn
+    public function clntFaceRecognitionVrfcn(Request $request)
+    {
+        //Inputs Verification
+        $this->validate($request,
+                    [
+                        'client_unknown_face' => 'required'
+                    ]);
+
+        $clientId = $request->header('clientId');
+        
+        $client_unknown_face = $request->file('client_unknown_face');
+
+        $clientData = Client::where('clientId', $clientId)->get()->toArray();
+        $clientPlainId = $clientData['0']['id'];
+
+        //Add New Face Recognition
+        $newFaceRecognition = new FaceRecognition();
+        $newFaceRecognition->clientId = $clientId;
+
+        if ($newFaceRecognition->save()) {
+
+            //Upload Unknown Image File
+            Storage::disk('public')->putFileAs('FACE_RECOGNITION/ATTEMPTS/', $client_unknown_face, 'face_attempt_'.$newFaceRecognition->id.".jpg");        
+
+
+            //Client Registered Image
+            $clientRegisteredImg = Storage::disk('public')->path('FACE_RECOGNITION/ATTEMPTS/face_attempt_'.$newFaceRecognition->id.".jpg");
+
+            $clientUnknownImg = Storage::disk('public')->path('FACE_RECOGNITION/FACES/face_'.$clientPlainId.".jpg");
+
+
+            //Command
+            $cmd_py = "python " . base_path() . "/py_ai_ml/compare_faces_recognition.py " . $clientRegisteredImg . " " . $clientUnknownImg;
+
+            exec($cmd_py, $output, $ret_val);
+
+            echo "\n\n";
+
+            echo $cmd_py."\n\n";
+
+            echo "<pre>";
+            print_r($output);
+
+        }
+
+
+        die();
+
+        //Verify Image
+        // shell_exec("python " . base_path() . "")
+    }
+
     //pstClntGtwyAccss
     public function pstClntGtwyAccss(Request $request)
     {
