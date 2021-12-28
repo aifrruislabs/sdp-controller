@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Post Face for Face Recognition
+	Route::post('/user/post/face/recognition/face', ['uses' => 'FaceRecognitionController@userPostNewFaceRec']);
+
 	//Get All Trust Score Policies
 	Route::get('/user/trust/policies/get/all', ['uses' => 'TrustScorePolicyController@usertrustGetAllPolicies']);
 

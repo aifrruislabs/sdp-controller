@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class FaceRecognition extends Model
+class Face extends Model
 {
     //Fillables
     protected $fillable = [

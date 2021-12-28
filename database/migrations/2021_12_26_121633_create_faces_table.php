@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFaceRecognitionsTable extends Migration
+class CreateFacesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class CreateFaceRecognitionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('face_recognitions', function (Blueprint $table) {
+        Schema::create('faces', function (Blueprint $table) {
             $table->bigIncrements('id');
-
+           
             $table->string('userId');
 
             $table->string('clientId');
 
-            $table->string('attemptStatus')->nullable();
-
+            $table->longText('faceLocation')->nullable();
+            
             $table->timestamps();
         });
     }
@@ -33,6 +33,6 @@ class CreateFaceRecognitionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('face_recognitions');
+        Schema::dropIfExists('faces');
     }
 }
