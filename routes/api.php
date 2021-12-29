@@ -41,6 +41,33 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Delete Trust Score Policy
+	Route::post('/user/delete/trust/policy', ['uses' => 'TrustScorePolicyController@userDeleteTrustPolicy']);
+
+	//Delete Trust Score Weight
+	Route::post('/user/delete/trust/score/weight', ['uses' => 'TrustScoreWeightController@usrDltTrstScoreWeight']);
+
+	//Delete Client Geo Loc
+	Route::post('/user/delete/client/geo/loc', ['uses' => 'ClientGeoLocationController@userDeleteClientGeoLoc']);
+
+	//Delete Face Rec Data
+	Route::post('/user/delete/face/rec/data', ['uses' => 'FaceRecognitionController@deleteFaceRecData']);
+
+	//Delete Client Mac
+	Route::post('/user/delete/client/mac', ['uses' => 'ClientMacController@userDeleteClientMac']);
+
+	//Get All Clients Geo Locs
+	Route::get('/user/get/all/client/geo/locs', ['uses' => 'ClientGeoLocationController@getAllClientGeoLocs']);
+
+	//Get All Clients Mac List
+	Route::get('/user/get/all/clients/macs/list', ['uses' => 'ClientMacController@getAllClientsMacList']);
+
+	//Post Client Geo Location
+	Route::post('/user/create/client/geo/location', ['uses' => 'ClientGeoLocationController@addNewGeoForClient']);
+
+	//Post Client Mac Address
+	Route::post('/user/post/client/mac', ['uses' => 'ClientMacController@createNewMacForClient']);
+
 	//Get All Faces List
 	Route::get('/user/sdp/get/all/face/rec/list', ['uses' => 'FaceRecognitionController@userSdpGetAllFacesList']);
 

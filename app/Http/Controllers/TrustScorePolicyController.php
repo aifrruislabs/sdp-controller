@@ -8,6 +8,21 @@ use Illuminate\Http\Request;
 
 class TrustScorePolicyController extends Controller
 {
+    //userDeleteTrustPolicy
+    public function userDeleteTrustPolicy(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,
+                    [
+                        'trustScorePolicyId' => 'required'
+                    ]);
+
+        //Deleting Trust Policy
+        $deleteTrustPolicy = TrustScorePolicy::find($request->trustScorePolicyId)->delete();
+
+        return response()->json(array('status' => true), 200);
+    }
+
 	//usertrustGetAllPolicies
 	public function usertrustGetAllPolicies(Request $request)
 	{

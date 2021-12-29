@@ -10,6 +10,28 @@ use Illuminate\Http\Request;
 
 class FaceRecognitionController extends Controller
 {
+    //deleteFaceRecData
+    public function deleteFaceRecData(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,
+                    [
+                        'faceId' => 'required'
+                    ]);
+
+        $faceId = $request->faceId;
+
+        $userId = $request->header('userId');
+
+        //Delete Face
+        $deleteFace = Face::find($faceId)->delete();
+
+        //Delete Face on Local Storage
+        Storage::disk('public')->delete('FACE_RECOGNITION/FACES/face_'.$faceId.".jpg");
+
+        return response()->json(array('status' => true), 200);
+    }
+
     //userSdpGetAllFacesList
     public function userSdpGetAllFacesList(Request $request)
     {

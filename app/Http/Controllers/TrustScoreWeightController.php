@@ -7,6 +7,20 @@ use Illuminate\Http\Request;
 
 class TrustScoreWeightController extends Controller
 {
+    //usrDltTrstScoreWeight
+    public function usrDltTrstScoreWeight(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,
+                        [
+                            'trustScoreWeightId' => 'required'
+                        ]);
+
+        $deleteTrustScoreWeight = TrustScoreWeight::find($request->trustScoreWeightId)->delete();
+
+        return response()->json(array('status' => true), 200);
+    }
+
 	//getAllFactorsWeights
 	public function getAllFactorsWeights(Request $request)
 	{

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFacesTable extends Migration
+class CreateClientGeoLocationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,19 @@ class CreateFacesTable extends Migration
      */
     public function up()
     {
-        Schema::create('faces', function (Blueprint $table) {
+        Schema::create('client_geo_locations', function (Blueprint $table) {
             $table->bigIncrements('id');
-           
-            $table->string('userId')->nullable();
+
+            $table->string('userId');
 
             $table->string('clientId');
 
-            $table->longText('faceLocation')->nullable();
-            
+            $table->string('latitude')->nullable();
+
+            $table->string('longitude')->nullable();
+
+            $table->string('kilometreRadius')->nullable();
+
             $table->timestamps();
         });
     }
@@ -33,6 +37,6 @@ class CreateFacesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('faces');
+        Schema::dropIfExists('client_geo_locations');
     }
 }
