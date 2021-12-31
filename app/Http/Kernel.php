@@ -39,7 +39,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            'throttle:60,1',
+            'throttle:120,1',
             'bindings',
         ],
     ];
@@ -66,6 +66,7 @@ class Kernel extends HttpKernel
         'normalAdminAuthMiddleware' => \App\Http\Middleware\NormalAdminAuthMiddleware::class,
         'userAuthMiddleware' => \App\Http\Middleware\UserAuthMiddleware::class,    
         'superAdminAuthMiddleware' => \App\Http\Middleware\SuperAdminAuthMiddleware::class,
+        'gatewayAuthMiddleware' => \App\Http\Middleware\GatewayAuthMiddleware::class,
     ];
 
 
