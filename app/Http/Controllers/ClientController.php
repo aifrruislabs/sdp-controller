@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Client;
 use App\Gateway;
 use App\Service;
+use App\ClientMac;
 use App\TrustScoreWeight;
 use App\ClientServiceAccess;
 
@@ -16,6 +17,31 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
+    //validateClientMacAddress
+    public function validateClientMacAddress(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,
+                    [
+                        'macAddr' => 'required'
+                    ]);
+
+        $macAddr = $request->macAddr;
+        $clientId = $request->header('clientId');
+
+        //Check Client Mac Address
+        $checkClientMacAddr = ClientMac::where([
+                            ['clientId', '=', $clientId],
+                            ['macAddr', '=', $macAddr]
+                            ])->get()->toArray();
+
+        if (sizeof($checkClientMacAddr) == 1) {
+
+        }else {
+            return response()->json(array('status' => false), 200);
+        }
+    }
+
     //clntFaceRecognitionVrfcn
     public function clntFaceRecognitionVrfcn(Request $request)
     {

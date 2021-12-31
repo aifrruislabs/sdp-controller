@@ -146,6 +146,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'userAuthMiddleware'], function 
 //Client Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], function () {
 
+	//Mac Address Check
+	Route::post('/validate/client/mac/address', ['uses' => 'ClientController@validateClientMacAddress']);
+
 	//Face Recognition Check
 	Route::post('/client/face/recognition/verification', ['uses' => 'ClientController@clntFaceRecognitionVrfcn']);
 
@@ -164,6 +167,15 @@ Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], functio
 	//Pull Granted Services List
 	Route::get('/client/pull/granted/services', ['uses' => 'ClientController@clientPullGrantedServices']);
 	
+});
+
+//Routes Protected with Middleware
+//Gateway Routes
+Route::group(['prefix' => 'v1', 'middleware' => 'gatewayAuthMiddleware'], function () {
+
+	//Post TX Gateway Stats
+	Route::post('/post/gateway/network/traffic/tx', ['uses' => 'GatewayNetworkTrafficController@postGatewayTrafficTx']);
+
 });
 
 //Unprotected Routes
