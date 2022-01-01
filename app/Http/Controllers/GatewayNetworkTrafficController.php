@@ -8,6 +8,27 @@ use Illuminate\Http\Request;
 
 class GatewayNetworkTrafficController extends Controller
 {
+
+    //getGatewayNetworkTrffc
+    public function getGatewayNetworkTrffc(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,
+                    [
+                        'gatewayId' => 'required'
+                    ]);
+
+        $userId = $request->header('userId');
+
+        $getLastInsertedLog = GatewayNetworkTraffic::where([
+                                    ['userId', '=', $userId],
+                                    ['gatewayId', '=', $request->gatewayId]
+                                    ])->orderBy('created_at', 'DESC')
+                                    ->limit(1)->get()[0];
+
+        return response()->json(array('status' => true, 'data' => $getLastInsertedLog), 200);
+    }
+
     //postGatewayTrafficTx
     public function postGatewayTrafficTx(Request $request)
     {

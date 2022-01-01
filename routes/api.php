@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Get Gateway Stats
+	Route::get('/get/gateway/network/traffic', ['uses' => 'GatewayNetworkTrafficController@getGatewayNetworkTrffc']);
+
 	//Delete Trust Score Policy
 	Route::post('/user/delete/trust/policy', ['uses' => 'TrustScorePolicyController@userDeleteTrustPolicy']);
 
