@@ -149,6 +149,12 @@ Route::group(['prefix' => 'v1', 'middleware' => 'userAuthMiddleware'], function 
 //Client Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], function () {
 
+	//Validate Geo Location Data
+	Route::post('/validate/client/geo/location', ['uses' => 'ClientGeoLocationController@validateClientGeoLocation']);
+		
+	//Get Continue Next Page
+	Route::get('/get/next/page/client/continue', ['uses' => 'ClientController@getNextPageClientContinue']);
+
 	//Mac Address Check
 	Route::post('/validate/client/mac/address', ['uses' => 'ClientController@validateClientMacAddress']);
 

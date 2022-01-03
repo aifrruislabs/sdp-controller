@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Storage;
+
 use App\Client;
 use App\Gateway;
 use App\Service;
 use App\ClientMac;
 use App\TrustScoreWeight;
 use App\ClientServiceAccess;
+
+use App\FaceRecognition;
 
 use App\TrustScorePolicy;
 use App\TrustScoreTracker;
@@ -17,6 +21,44 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
+    //getNextPageClientContinue
+    public function getNextPageClientContinue(Request $request)
+    {
+        $clientId = $request->header('clientId');
+
+        $clientData = Client::where('clientId', $clientId)->get()->toArray();
+
+        if (sizeof($clientData) == 1) {
+
+            //If Passed Grant Trust Score to Client for this Step
+            $clientId = $clientData['0']['clientId'];
+            $clientAdminUserId = $clientData['0']['userId'];
+
+            $scoreFactorsUserList = TrustScoreWeight::where([
+                                        ['userId', '=', $clientAdminUserId]
+                                    ])->get();
+
+            //Check for Next Factor in the List
+            $scoreFactorIdsList = array();
+
+            foreach ($scoreFactorsUserList as $factorIdRes) {
+                $scoreFactorIdsList[] = $factorIdRes->scoreFactorId;
+            }
+
+            //Remove Ids on Tracker
+            $scoreFactorIdsRes = $this->removeIdsOnTracker($scoreFactorIdsList, $clientId);
+
+            return response()->json(array(
+                                'status' => true, 
+                                'clientId' => $clientId,
+                                'scoreFactorIdsList' => $scoreFactorIdsRes), 200);
+        
+        }else {
+            return response()->json(array('status' => false, 'message' => 'No Client Mac'), 200);
+        }
+
+    }
+
     //validateClientMacAddress
     public function validateClientMacAddress(Request $request)
     {
@@ -26,7 +68,7 @@ class ClientController extends Controller
                         'macAddr' => 'required'
                     ]);
 
-        $macAddr = $request->macAddr;
+        $macAddr = strtolower(str_replace("-", ":", $request->macAddr));
         $clientId = $request->header('clientId');
 
         //Check Client Mac Address
@@ -35,10 +77,68 @@ class ClientController extends Controller
                             ['macAddr', '=', $macAddr]
                             ])->get()->toArray();
 
+        
+        $clientData = Client::where('clientId', $clientId)->get()->toArray();
+
+
         if (sizeof($checkClientMacAddr) == 1) {
 
+            //If Passed Grant Trust Score to Client for this Step
+            $clientId = $checkClientMacAddr['0']['clientId'];
+            $clientAdminUserId = $checkClientMacAddr['0']['userId'];
+
+            $scoreFactorsUserList = TrustScoreWeight::where([
+                                        ['userId', '=', $clientAdminUserId]
+                                    ])->get();
+
+            $getScorePercentQuery = TrustScoreWeight::where([
+                                        ['userId', '=', $clientAdminUserId],
+                                        ['scoreFactorId', '=', 2]
+                                    ])->get()->toArray();
+
+            if (sizeof($getScorePercentQuery) == 1) {
+
+                $scorePercent = $getScorePercentQuery['0']['scoreFactorPercent'];
+
+                //Add Score Track in TrustScore Tracker
+                $addScoreTrack = new TrustScoreTracker();
+                $addScoreTrack->userId = $clientAdminUserId;
+                $addScoreTrack->clientId = $clientId;
+                $addScoreTrack->trustScoreFactorId = 2;
+                $addScoreTrack->percentScored = intval($scorePercent);
+                $addScoreTrack->save();
+
+                //Add New Score to User || Update Client Score
+                $newClientTrustScore = intval($clientData['0']['totalTrustScore'])  
+                                        + intval($scorePercent);
+
+                //Update Client Score
+                $updateClientScore = Client::find($clientData['0']['id']);
+                $updateClientScore->totalTrustScore = $newClientTrustScore;
+                $updateClientScore->update();
+
+
+                //Check for Next Factor in the List
+                $scoreFactorIdsList = array();
+
+                foreach ($scoreFactorsUserList as $factorIdRes) {
+                    $scoreFactorIdsList[] = $factorIdRes->scoreFactorId;
+                }
+
+                //Remove Ids on Tracker
+                $scoreFactorIdsRes = $this->removeIdsOnTracker($scoreFactorIdsList, $clientId);
+
+                return response()->json(array(
+                                    'status' => true, 
+                                    'clientId' => $clientId,
+                                    'scoreFactorIdsList' => $scoreFactorIdsRes), 200);
+            }else {
+                return response()->json(array('status' => false, 'message' => 'No Score Percent'), 200);    
+            }
+
+
         }else {
-            return response()->json(array('status' => false), 200);
+            return response()->json(array('status' => false, 'message' => 'No Client Mac'), 200);
         }
     }
 
@@ -75,7 +175,7 @@ class ClientController extends Controller
 
 
             //Command
-            $cmd_py = "python " . base_path() . "/py_ai_ml/compare_faces_recognition.py " . $clientRegisteredImg . " " . $clientUnknownImg;
+            $cmd_py = 'python "' . base_path() . '/py_ai_ml/compare_faces_recognition.py" ' . ' "'.$clientRegisteredImg . '" ' . ' "'.$clientUnknownImg.'"';
 
             exec($cmd_py, $output, $ret_val);
 
@@ -468,7 +568,7 @@ class ClientController extends Controller
     }
 
     //removeIdsOnTracker
-    private function removeIdsOnTracker($scoreFactorIdsList, $clientId)
+    public function removeIdsOnTracker($scoreFactorIdsList, $clientId)
     {
         $responseArr = array();
         $trackerIdsL = array();
