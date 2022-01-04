@@ -76,7 +76,7 @@ class FaceRecognitionController extends Controller
     	//Check If Already Having Face
     	$checkFaceExist = Face::where([
     						['userId', '=', $userId],
-    						['clientId', '=', $request->clientId]
+    						['clientId', '=', $clientId]
     						])->get()->toArray();
 
     	
@@ -88,11 +88,11 @@ class FaceRecognitionController extends Controller
             
             if ($addNewFace->save()) {
                 //Uploading Face Image
-                Storage::disk('public')->putFileAs('FACE_RECOGNITION/FACES/', $faceFile, 'face_'.$addNewFace->id.".jpg");
+                Storage::disk('public')->putFileAs('FACE_RECOGNITION/FACES/', $faceFile, 'face_'.$clientId.".jpg");
 
                 //Update Face Location
                 $updateFaceLoc = Face::find($addNewFace->id);
-                $updateFaceLoc->faceLocation = "FACE_RECOGNITION/FACES/face_".$addNewFace->id.".jpg";
+                $updateFaceLoc->faceLocation = "FACE_RECOGNITION/FACES/face_".$clientId.".jpg";
                 $updateFaceLoc->update();
 
                 return response()->json(array('status' => true, 'message' => 'Uploaded Successfully'), 201);

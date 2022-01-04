@@ -2,8 +2,8 @@ import os
 import sys
 import face_recognition
 
-registered_img = sys.argv['1']
-from_client_img = sys.argv['2']
+registered_img = sys.argv[1]
+from_client_img = sys.argv[2]
 
 on_db_img = face_recognition.load_image_file(registered_img)
 alpha_face_encoding = face_recognition.face_encodings(on_db_img)[0]
@@ -13,12 +13,7 @@ unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
 
 results = face_recognition.compare_faces([alpha_face_encoding], unknown_face_encoding)
 
-print ("\n\n")
-print (results)
-print ("\n\n")
-
-
 if results[0] == True:
-    print("It's a picture of me!")
+	return "PASSED"    
 else:
-    print("It's not a picture of me!")
+    return "FAILED"
