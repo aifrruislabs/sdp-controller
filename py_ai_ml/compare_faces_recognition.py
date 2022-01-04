@@ -14,6 +14,6 @@ unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
 results = face_recognition.compare_faces([alpha_face_encoding], unknown_face_encoding)
 
 if results[0] == True:
-	return "PASSED"    
+	print "PASSED"    
 else:
-    return "FAILED"
+    print "FAILED"
