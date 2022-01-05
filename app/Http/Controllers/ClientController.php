@@ -156,7 +156,7 @@ class ClientController extends Controller
         $client_unknown_face = $request->file('client_unknown_face');
 
         $clientData = Client::where('clientId', $clientId)->get()->toArray();
-        $adminUserId = $clientId['0']['userId'];
+        $adminUserId = $clientData['0']['userId'];
         $clientPlainId = $clientData['0']['id'];
 
         //Add New Face Recognition
