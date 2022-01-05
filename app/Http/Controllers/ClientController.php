@@ -230,10 +230,11 @@ class ClientController extends Controller
 
                 return response()->json(array(
                         'status' => true, 
+                        'message' => 'FACE PASSED',
                         'scoreFactorIdsList' => $scoreFactorIdsRes), 200);
 
             }else {
-                return response()->json(array('statu' => true, 'error_code' => 'FACE_FAIL', 
+                return response()->json(array('status' => false, 'error_code' => 'FACE_FAIL', 
                     'message' => 'Face Recognition Failed'), 200);
             }
 
