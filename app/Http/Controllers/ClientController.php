@@ -156,6 +156,7 @@ class ClientController extends Controller
         $client_unknown_face = $request->file('client_unknown_face');
 
         $clientData = Client::where('clientId', $clientId)->get()->toArray();
+        $adminUserId = $clientId['0']['userId'];
         $clientPlainId = $clientData['0']['id'];
 
         //Add New Face Recognition
@@ -167,20 +168,74 @@ class ClientController extends Controller
             //Upload Unknown Image File
             Storage::disk('public')->putFileAs('FACE_RECOGNITION/ATTEMPTS/', $client_unknown_face, 'face_attempt_'.$newFaceRecognition->id.".jpg");        
 
-
             //Client Registered Image
             $clientRegisteredImg = Storage::disk('public')->path('FACE_RECOGNITION/ATTEMPTS/face_attempt_'.$newFaceRecognition->id.".jpg");
 
             $clientUnknownImg = Storage::disk('public')->path('FACE_RECOGNITION/FACES/face_'.$clientPlainId.".jpg");
 
-
             //Command
-            $cmd_py = 'python "' . base_path() . '/py_ai_ml/compare_faces_recognition.py" ' . ' "'.$clientRegisteredImg . '" ' . ' "'.$clientUnknownImg.'"';
+            $cmd_py = 'python3 "' . base_path() . '/py_ai_ml/compare_faces_recognition.py" ' . ' "'.$clientRegisteredImg . '" ' . ' "'.$clientUnknownImg.' 2>&1;"';
 
             $cmd_output =  shell_exec($cmd_py);
 
-            echo "<pre>";
-            print_r($output);
+            //Statuses
+            //-PASSED
+            //-FAILED
+
+            //Update Face Recognition Status
+            $updateFaceRecStat = FaceRecognition::find($newFaceRecognition->id);
+            $updateFaceRecStat->attemptStatus = $cmd_output;
+            $updateFaceRecStat->update();
+
+
+            if ($cmd_output == "PASSED") {
+
+                $scoreFactorsUserList = TrustScoreWeight::where([
+                                            ['userId', '=', $adminUserId]
+                                        ])->get();
+
+                //Check for Next Factor in the List
+                $scoreFactorIdsList = array();
+
+                foreach ($scoreFactorsUserList as $factorIdRes) {
+                    $scoreFactorIdsList[] = $factorIdRes->scoreFactorId;
+                }
+
+                $getScorePercentQuery = TrustScoreWeight::where([
+                                            ['userId', '=', $adminUserId],
+                                            ['scoreFactorId', '=', 5]
+                                        ])->get()->toArray();
+
+                $scorePercent = $getScorePercentQuery['0']['scoreFactorPercent'];
+
+                //Add Score Track in TrustScore Tracker
+                $addScoreTrack = new TrustScoreTracker();
+                $addScoreTrack->userId = $adminUserId;
+                $addScoreTrack->clientId = $clientId;
+                $addScoreTrack->trustScoreFactorId = 5;
+                $addScoreTrack->percentScored = intval($scorePercent);
+                $addScoreTrack->save();
+
+                //Add New Score to User || Update Client Score
+                $newClientTrustScore = intval($clientData['0']['totalTrustScore'])  
+                                        + intval($scorePercent);
+
+                //Update Client Score
+                $updateClientScore = Client::find($clientData['0']['id']);
+                $updateClientScore->totalTrustScore = $newClientTrustScore;
+                $updateClientScore->update();
+
+                //Remove Ids on Tracker
+                $scoreFactorIdsRes = $clientController->removeIdsOnTracker($scoreFactorIdsList, $clientId);
+
+                return response()->json(array(
+                        'status' => true, 
+                        'scoreFactorIdsList' => $scoreFactorIdsRes), 200);
+
+            }else {
+                return response()->json(array('statu' => true, 'error_code' => 'FACE_FAIL', 
+                    'message' => 'Face Recognition Failed'), 200);
+            }
 
         }
 
