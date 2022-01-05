@@ -176,7 +176,7 @@ class ClientController extends Controller
             //Command
             $cmd_py = 'python3 "' . base_path() . '/py_ai_ml/compare_faces_recognition.py" ' . ' "'.$clientRegisteredImg . '" ' . ' "'.$clientUnknownImg.' 2>&1;"';
 
-            $cmd_output =  shell_exec($cmd_py);
+            $cmd_output =  trim(shell_exec($cmd_py));
 
             //Statuses
             //-PASSED
@@ -187,6 +187,7 @@ class ClientController extends Controller
             $updateFaceRecStat->attemptStatus = $cmd_output;
             $updateFaceRecStat->update();
 
+            echo "-".$cmd_output."-";
 
             if ($cmd_output == "PASSED") {
 
