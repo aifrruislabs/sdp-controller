@@ -174,7 +174,7 @@ class ClientController extends Controller
             $clientUnknownImg = Storage::disk('public')->path('FACE_RECOGNITION/FACES/face_'.$clientPlainId.".jpg");
 
             //Command
-            $cmd_py = 'python3 "' . base_path() . '/py_ai_ml/compare_faces_recognition.py" ' . ' "'.$clientRegisteredImg . '" ' . ' "'.$clientUnknownImg.' 2>&1;"';
+            $cmd_py = 'python3 "' . base_path() . '/py_ai_ml/compare_faces_recognition.py" ' . ' "'.$clientRegisteredImg . '" ' . ' "'.$clientUnknownImg.'" 2>&1;';
 
             $cmd_output =  trim(shell_exec($cmd_py));
 
