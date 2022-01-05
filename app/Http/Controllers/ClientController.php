@@ -177,22 +177,13 @@ class ClientController extends Controller
             //Command
             $cmd_py = 'python "' . base_path() . '/py_ai_ml/compare_faces_recognition.py" ' . ' "'.$clientRegisteredImg . '" ' . ' "'.$clientUnknownImg.'"';
 
-            exec($cmd_py, $output, $ret_val);
-
-            echo "\n\n";
-
-            echo $cmd_py."\n\n";
+            $cmd_output =  shell_exec($cmd_py);
 
             echo "<pre>";
             print_r($output);
 
         }
 
-
-        die();
-
-        //Verify Image
-        // shell_exec("python " . base_path() . "")
     }
 
     //pstClntGtwyAccss

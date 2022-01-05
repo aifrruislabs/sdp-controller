@@ -52,7 +52,7 @@ class FaceRecognitionController extends Controller
                         'clientLastName' => $clientData['0']['lastName'],
                         'clientUsername' => $clientData['0']['username'],
                         'clientId' => $clientData['0']['clientId'],
-                        'faceLocation' => getBaseUrl() . pF() . "/storage/" . $face->faceLocation
+                        'faceLocation' => getApiBaseUrl() . pF() . "/storage/" . $face->faceLocation
                          );
         }
 
