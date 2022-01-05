@@ -19,6 +19,8 @@ use App\TrustScoreTracker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+use App\Http\Controllers\ClientController;
+
 class ClientController extends Controller
 {
     //getNextPageClientContinue
@@ -187,8 +189,6 @@ class ClientController extends Controller
             $updateFaceRecStat->attemptStatus = $cmd_output;
             $updateFaceRecStat->update();
 
-            echo "-".$cmd_output."-";
-
             if ($cmd_output == "PASSED") {
 
                 $scoreFactorsUserList = TrustScoreWeight::where([
@@ -227,6 +227,7 @@ class ClientController extends Controller
                 $updateClientScore->update();
 
                 //Remove Ids on Tracker
+                $clientController = new ClientController;
                 $scoreFactorIdsRes = $clientController->removeIdsOnTracker($scoreFactorIdsList, $clientId);
 
                 return response()->json(array(
