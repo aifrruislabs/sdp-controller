@@ -16,9 +16,9 @@ function getApiBaseUrl() {
 	if (pF() == "") {
 		return "http://127.0.0.1:8000";
 	}else {
-		return "https://sdp.aifrruislabs.com";
+		return "https://sdpapi.aifrruislabs.com";
 	}
-	
+
 }
 
 //Public Location
