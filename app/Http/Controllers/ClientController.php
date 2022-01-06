@@ -473,6 +473,7 @@ class ClientController extends Controller
     {
         $clientId = $request->header('clientId');
 
+        $grantedServicesListTracker  = array();
         $grantedServicesList = array();
 
         //Check Client Trust Score
@@ -496,9 +497,16 @@ class ClientController extends Controller
                                                     ])->get();
 
                     foreach ($policiesOnUserCredentialV as $policyServ) {
-                        $grantedServicesList[] = Service::where('id', $policyServ->serviceId)
-                                                        ->get()
-                                                        ->toArray()[0];    
+                        $grantedServicesListTracker[] = $policyServ->serviceId;
+
+                        if (!in_array($policyServ->serviceId, $grantedServicesListTracker)) {
+                            
+                            $grantedServicesList[] = Service::where('id', $policyServ->serviceId)
+                                                            ->get()
+                                                            ->toArray()[0];    
+                                                                
+                        }
+                        
                     }
             
                 }
