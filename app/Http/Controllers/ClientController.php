@@ -497,16 +497,15 @@ class ClientController extends Controller
                                                     ])->get();
 
                     foreach ($policiesOnUserCredentialV as $policyServ) {
-                        $grantedServicesListTracker[] = $policyServ->serviceId;
-
+                        
                         if (!in_array($policyServ->serviceId, $grantedServicesListTracker)) {
-                            
                             $grantedServicesList[] = Service::where('id', $policyServ->serviceId)
                                                             ->get()
-                                                            ->toArray()[0];    
-                                                                
+                                                            ->toArray()[0];               
                         }
                         
+                        //Add Service Id to the tracker
+                        $grantedServicesListTracker[] = $policyServ->serviceId;
                     }
             
                 }
