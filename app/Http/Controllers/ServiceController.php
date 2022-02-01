@@ -24,6 +24,7 @@ class ServiceController extends Controller
         $updateService->serviceTitle = $request->serviceTitle;
         $updateService->serviceInfo = $request->serviceInfo;
         $updateService->servicePort = $request->servicePort;
+        $updateService->serviceProto = $request->serviceProto;
         $updateService->serviceScore = $request->serviceScore;
 
         if ($updateService->update()) {
@@ -80,6 +81,7 @@ class ServiceController extends Controller
     	$newService->serviceTitle = $request->serviceTitle;
     	$newService->serviceInfo = $request->serviceInfo;
     	$newService->servicePort = $request->servicePort;
+        $newService->serviceProto = $request->serviceProto;
         $newService->serviceScore = $request->serviceScore;
 
     	if ($newService->save()) {

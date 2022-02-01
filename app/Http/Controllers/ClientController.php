@@ -346,7 +346,16 @@ class ClientController extends Controller
             $servicesProtosPortsList = "";
 
             foreach ($grantedServicesList as $serviceD) {
-                $serviceProto = $serviceD['serviceProto'];
+                $serviceProto = "";
+
+                $serviceProtoId = $serviceD['serviceProto'];
+
+                if ($serviceProtoId == "1") {
+                    $serviceProto = "tcp";
+                }else if ($serviceProtoId == "2") {
+                    $serviceProto = "udp";
+                }
+
                 $servicePort = $serviceD['servicePort'];
 
                 $servicesProtosPortsList .= $serviceProto."/".$servicePort.",";                
