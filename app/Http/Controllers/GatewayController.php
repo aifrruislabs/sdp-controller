@@ -4,10 +4,78 @@ namespace App\Http\Controllers;
 
 use App\Service;
 use App\Gateway;
+use App\GatewayServiceStatus;
 use Illuminate\Http\Request;
 
 class GatewayController extends Controller
 {
+
+    //toggleGatewayServiceStatus
+    public function toggleGatewayServiceStatus(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,
+                [
+                    'gatewayId' => 'required',
+                    'serviceId' => 'required',
+                    'serviceStatus' => 'required'
+                ]);
+
+        $userId = $request->header('userId');
+
+        $gatewayId = $request->gatewayId;
+        $serviceId = $request->serviceId;
+        $serviceStatus = $request->serviceStatus;
+
+        $toggleOperation = "FALSE";
+
+        //Sending Request to Update Rules to Gateway
+        if ($request->serviceStatus == "1") {
+            $toggleOperation = $this->turnOffServiceOnGateway($serviceId, $gatewayId);
+        }else {
+            $toggleOperation = $this->turnOnServiceOnGateway($serviceId, $gatewayId);
+        }
+        
+        if ($toggleOperation == "TRUE") {
+            //Get Gateway Service Status Row
+            $getGSRow = GatewayServiceStatus::where([
+                                ['userId', '=', $userId],
+                                ['serviceId', '=', $serviceId],
+                                ['gatewayId', '=', $gatewayId]
+                                ])->get()->toArray();
+
+            if (sizeof($getGSRow) == 1) {
+                //Update Gateway Service Status
+                $updateGatewayServiceStatus = GatewayServiceStatus::find($getGSRow['0']['id']);
+
+                if ($request->serviceStatus == "1") {
+                    $updateGatewayServiceStatus->serviceStatus = "OFF";
+                }else {
+                    $updateGatewayServiceStatus->serviceStatus = "ON";
+                }
+                
+                $updateGatewayServiceStatus->update();
+
+            }
+            
+            return response()->json(array('status' => true), 201);
+        }else {
+            return response()->json(array('status' => false), 200);
+        }
+
+    }
+
+    //turnOnServiceOnGateway
+    private function turnOnServiceOnGateway($serviceId, $gatewayId) {
+        sleep(2);
+        return "TRUE";
+    }   
+
+    //turnOffServiceOnGateway
+    private function turnOffServiceOnGateway($serviceId, $gatewayId) {
+        sleep(2);
+        return "TRUE";
+    }
 
     //userGatewayDeleteService
     public function userGatewayDeleteService(Request $request)
@@ -18,6 +86,9 @@ class GatewayController extends Controller
                         'serviceId' => 'required',
                         'gatewayId' => 'required'
                     ]);
+
+        //User Id Headers
+        $userId = $request->header('userId');
 
         //Get All Services List
         $allGatewayServicesList = Gateway::where('id', $request->gatewayId)->get()->toArray();
@@ -37,6 +108,19 @@ class GatewayController extends Controller
             $updateGatewayServices->gatewayServicesList = $currentServicesList;
             $updateGatewayServices->update();
 
+            //Remove Service on GatewayServiceStatusController
+            $rmGS_Wh = GatewayServiceStatus::where([
+                                        ['userId', '=', $userId],
+                                        ['gatewayId', '=', $request->gatewayId],
+                                        ['serviceId', '=', $request->serviceId]
+                                        ])->get()->toArray();
+
+            if (sizeof($rmGS_Wh) == 1) {
+                //Delete Gateway Service Status
+                $rmGS = GatewayServiceStatus::find($rmGS_Wh['0']['id']);
+                $rmGS->delete();
+            }
+
             return response()->json(array('status' => true, 'data' => $newServiceData), 200);            
 
         }else {
@@ -54,6 +138,8 @@ class GatewayController extends Controller
                             'gatewayId' => 'required'
                         ]);
 
+        $userId = $request->header('userId');
+
         //Get All Services List
         $allGatewayServicesList = Gateway::where('id', $request->gatewayId)->get()->toArray();
 
@@ -69,6 +155,14 @@ class GatewayController extends Controller
             $updateGatewayServices->gatewayServicesList = json_encode($currentServicesList);
             $updateGatewayServices->update();
 
+            //Add Service to GatewayServiceStatus with Off Status
+            $newGatewayServiceStatus = new GatewayServiceStatus();
+            $newGatewayServiceStatus->userId = $userId;
+            $newGatewayServiceStatus->gatewayId = $request->gatewayId;
+            $newGatewayServiceStatus->serviceId = $request->serviceId;
+            $newGatewayServiceStatus->serviceStatus = "OFF";
+            $newGatewayServiceStatus->save();
+
             return response()->json(array('status' => true, 'data' => $newServiceData), 200);
 
         }else {
@@ -77,8 +171,10 @@ class GatewayController extends Controller
     }
 
     //userGetGatewayService
-    public function userGetGatewayService($gatewayId)
+    public function userGetGatewayService($gatewayId, Request $request)
     {
+        $userId = $request->header('userId');
+
         $allServices = Service::all()->toArray();
 
         $allServicesId = array();
@@ -108,11 +204,47 @@ class GatewayController extends Controller
         foreach ($gatewayServicesList as $gatewayServiceId) {
             $serviceData = Service::where('id', $gatewayServiceId)->get()->toArray();
 
-            $gatewayServicesListData[] = $serviceData[0];
+            $gatewayServicesListData[] = @$serviceData[0];
+        }
+
+        $gatewayServicesListDataResp = array();
+
+        //Adding Gateway Service Status to gatewayServicesListData
+        foreach ($gatewayServicesListData as $serviceData) {
+            
+            //Fetch Gateway Service Status
+            $gatewayServiceStat = GatewayServiceStatus::where([
+                                    ['userId', '=', $userId],
+                                    ['gatewayId', '=', $gatewayId],
+                                    ['serviceId', '=', $serviceData['id']]
+                                    ])->get()->toArray();
+
+            $serviceStatus = "0";
+
+            if (sizeof($gatewayServiceStat) == 1) {
+                if ($gatewayServiceStat['0']['serviceStatus'] == "ON") {
+                    $serviceStatus = "1";
+                }
+            }
+
+            $gatewayServicesListDataResp[] = array(
+                                'id' => $serviceData['id'], 
+                                'userId' => $userId,
+                                'gatewayId' => $gatewayId,
+                                'serviceId' => $serviceData['id'],
+                                'serviceTitle' => $serviceData['serviceTitle'],
+                                'serviceInfo' => $serviceData['serviceInfo'],
+                                'serviceProto' => $serviceData['serviceInfo'],
+                                'servicePort' => $serviceData['servicePort'],
+                                'serviceScore' => $serviceData['serviceScore'],
+                                'serviceStatus' => $serviceStatus,
+                                'created_at' => $serviceData['created_at'],
+                                'updated_at' => $serviceData['updated_at']
+                                );
         }
 
         return response()->json(array('status' => 'true',  
-            'gatewayServices' => $gatewayServicesListData, 'otherGatewayServices' => $otherGatewayServicesList), 200);
+            'gatewayServices' => $gatewayServicesListDataResp, 'otherGatewayServices' => $otherGatewayServicesList), 200);
     }
 
     //userUpdateGateway

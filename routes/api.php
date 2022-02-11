@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Turn on/off Service on Gateway Machine
+	Route::post('/toggle/gateway/service/status', ['uses' => 'GatewayController@toggleGatewayServiceStatus']);
+
 	//Get Gateway Stats
 	Route::get('/get/gateway/network/traffic', ['uses' => 'GatewayNetworkTrafficController@getGatewayNetworkTrffc']);
 
