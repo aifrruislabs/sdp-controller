@@ -262,9 +262,20 @@ class ClientController extends Controller
             $updateClientGateway->gatewayId = $request->gatewayId;
             $updateClientGateway->update();
 
-            return response()->json(array('status' => true), 200);
+            //Get Gateway Info
+            $gatewayInfo = Gateway::where('id', $request->gatewayId)->get()->toArray();
+
+            if (sizeof($gatewayInfo) == 1) {
+                return response()->json(array(
+                            'status' => true, 
+                            'gatewayNetworkAccessibility' => $gatewayInfo['0']['gatewayNetworkAccessibility'] 
+                        ), 200);
+            }else {
+                return response()->json(array('status' => false, 'message' => 'NO_GATEWAY'), 200);
+            }
+
         }else {
-            return response()->json(array('status' => false), 200);
+            return response()->json(array('status' => false, 'message' => 'NO_CLIENT'), 200);
         }
     }
 
