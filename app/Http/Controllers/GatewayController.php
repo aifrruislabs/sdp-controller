@@ -255,7 +255,8 @@ class GatewayController extends Controller
                     [
                         'gatewayId' => 'required',
                         'gatewayTitle' => 'required',
-                        'gatewayIP' => 'required'
+                        'gatewayIP' => 'required',
+                        'gatewayNetworkAccessibility' => 'required'
                     ]);
 
         //Update Gateway
@@ -263,6 +264,7 @@ class GatewayController extends Controller
         $updateGateway->gatewayTitle = $request->gatewayTitle;
         $updateGateway->gatewayInfo = $request->gatewayInfo;
         $updateGateway->gatewayIP = $request->gatewayIP;
+        $updateGateway->gatewayNetworkAccessibility = $request->gatewayNetworkAccessibility;
 
         if ($updateGateway->update()) {
             return response()->json(array('status' => true, 'message' => 'Gateway was Updated Successfully'), 200);
@@ -320,6 +322,7 @@ class GatewayController extends Controller
         $newGateway->userId = $userId;
     	$newGateway->gatewayTitle = $request->gatewayTitle;
     	$newGateway->gatewayInfo = $request->gatewayInfo;
+        $newGateway->gatewayNetworkAccessibility = $request->gatewayNetworkAccessibility;
         $newGateway->gatewayIP = $request->gatewayIP;
         $newGateway->gatewayServicesList = "[]";
 
