@@ -27,13 +27,11 @@ class GatewayController extends Controller
         $serviceId = $request->serviceId;
         $serviceStatus = $request->serviceStatus;
 
-        $toggleOperation = "FALSE";
-
         //Sending Request to Update Rules to Gateway
         if ($request->serviceStatus == "1") {
-            $toggleOperation = $this->toggleServiceGateway('ON', $serviceId, $gatewayId);
+            $this->toggleServiceGateway('ON', $serviceId, $gatewayId);
         }else {
-            $toggleOperation = $this->toggleServiceGateway('OFF', $serviceId, $gatewayId);
+            $this->toggleServiceGateway('OFF', $serviceId, $gatewayId);
         }
     
         //Get Gateway Service Status Row
