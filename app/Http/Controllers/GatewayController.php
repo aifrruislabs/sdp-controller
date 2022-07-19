@@ -103,12 +103,7 @@ class GatewayController extends Controller
             $response = curl_exec($ch);
             curl_close($ch);
 
-            return response()->json(array('status' => true), 201);
-
-        }else {
-            return response()->json(array('status' => false), 200);
         }
-
     }   
 
     //userGatewayDeleteService
