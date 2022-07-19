@@ -102,7 +102,7 @@ class GatewayController extends Controller
 
             # Send Request to Gateway Server to Turn on Default Drop Firewall Policy
             $ch = curl_init($toggle_gateway_status_url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
             $response = curl_exec($ch);
             curl_close($ch);
