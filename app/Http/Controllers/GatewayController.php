@@ -35,34 +35,30 @@ class GatewayController extends Controller
         }else {
             $toggleOperation = $this->toggleServiceGateway('OFF', $serviceId, $gatewayId);
         }
-        
-        if ($toggleOperation == "TRUE") {
-            //Get Gateway Service Status Row
-            $getGSRow = GatewayServiceStatus::where([
-                                ['userId', '=', $userId],
-                                ['serviceId', '=', $serviceId],
-                                ['gatewayId', '=', $gatewayId]
-                                ])->get()->toArray();
+    
+        //Get Gateway Service Status Row
+        $getGSRow = GatewayServiceStatus::where([
+                            ['userId', '=', $userId],
+                            ['serviceId', '=', $serviceId],
+                            ['gatewayId', '=', $gatewayId]
+                            ])->get()->toArray();
 
-            if (sizeof($getGSRow) == 1) {
-                //Update Gateway Service Status
-                $updateGatewayServiceStatus = GatewayServiceStatus::find($getGSRow['0']['id']);
+        if (sizeof($getGSRow) == 1) {
+            //Update Gateway Service Status
+            $updateGatewayServiceStatus = GatewayServiceStatus::find($getGSRow['0']['id']);
 
-                if ($request->serviceStatus == "1") {
-                    $updateGatewayServiceStatus->serviceStatus = "OFF";
-                }else {
-                    $updateGatewayServiceStatus->serviceStatus = "ON";
-                }
-                
-                $updateGatewayServiceStatus->update();
-
+            if ($request->serviceStatus == "1") {
+                $updateGatewayServiceStatus->serviceStatus = "OFF";
+            }else {
+                $updateGatewayServiceStatus->serviceStatus = "ON";
             }
             
-            return response()->json(array('status' => true), 201);
-        }else {
-            return response()->json(array('status' => false), 200);
-        }
+            $updateGatewayServiceStatus->update();
 
+        }
+        
+        return response()->json(array('status' => true), 201);
+    
     }
 
     //toggleServiceGateway
