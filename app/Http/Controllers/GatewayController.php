@@ -29,9 +29,9 @@ class GatewayController extends Controller
 
         //Sending Request to Update Rules to Gateway
         if ($request->serviceStatus == "1") {
-            $this->toggleServiceGateway('ON', $serviceId, $gatewayId);
+            @$this->toggleServiceGateway('OFF', $serviceId, $gatewayId);
         }else {
-            $this->toggleServiceGateway('OFF', $serviceId, $gatewayId);
+            @$this->toggleServiceGateway('ON', $serviceId, $gatewayId);
         }
     
         //Get Gateway Service Status Row
@@ -75,10 +75,10 @@ class GatewayController extends Controller
             $toggle_gateway_status_url = "";
 
             if ($toggleStatus == 'ON') {
-                //Turn Off Service
+                //Turn ON Service
                 $toggle_gateway_status_url = "http://" . $gatewayIP . ":8000/api/v1/up/default/drop/firewall/policy";
             }else {
-                //Turn On Service
+                //Turn Off Service
                 $toggle_gateway_status_url = "http://" . $gatewayIP . ":8000/api/v1/down/default/drop/firewall/policy";
             }
 
@@ -100,7 +100,6 @@ class GatewayController extends Controller
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
             $response = curl_exec($ch);
             curl_close($ch);
-
         }
     }   
 
