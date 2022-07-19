@@ -15,7 +15,9 @@ class Gateway extends Model
     */
     protected $fillable = [
 
-    	'userId', 'gatewayTitle', 'gatewayInfo', 'gatewayNetworkAccessibility', 'gatewayIP', 
+    	'userId', 'gatewayTitle', 'gatewayInfo', 
+
+        'gatewayNetworkAccessibility', 'gatewayIP', 
 
     	'gatewayAccessToken', 'gatewayServicesList'
 

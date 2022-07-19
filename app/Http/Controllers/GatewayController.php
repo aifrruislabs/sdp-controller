@@ -31,9 +31,9 @@ class GatewayController extends Controller
 
         //Sending Request to Update Rules to Gateway
         if ($request->serviceStatus == "1") {
-            $toggleOperation = $this->turnOffServiceOnGateway($serviceId, $gatewayId);
+            $toggleOperation = $this->toggleServiceGateway('ON', $serviceId, $gatewayId);
         }else {
-            $toggleOperation = $this->turnOnServiceOnGateway($serviceId, $gatewayId);
+            $toggleOperation = $this->toggleServiceGateway('OFF', $serviceId, $gatewayId);
         }
         
         if ($toggleOperation == "TRUE") {
@@ -65,17 +65,55 @@ class GatewayController extends Controller
 
     }
 
-    //turnOnServiceOnGateway
-    private function turnOnServiceOnGateway($serviceId, $gatewayId) {
-        sleep(2);
-        return "TRUE";
-    }   
+    //toggleServiceGateway
+    private function toggleServiceGateway($toggleStatus, $serviceId, $gatewayId) {
+        // Get Service Data
+        $serviceData = Service::where('id', $serviceId)->get()->toArray();
+        $gatewayData = Gateway::where('id', $gatewayId)->get()->toArray();
 
-    //turnOffServiceOnGateway
-    private function turnOffServiceOnGateway($serviceId, $gatewayId) {
-        sleep(2);
-        return "TRUE";
-    }
+        $gateWayData = Gateway::where('id', $gatewayId)->get()->toArray();
+
+        if ((sizeof($serviceData) == 1) && (sizeof($gateWayData) == 1)) {
+            $gatewayIP = $gateWayData['0']['gatewayIP'];
+            $servicePort = $serviceData['0']['servicePort'];
+            $serviceProto = $serviceData['0']['serviceProto'];
+
+            $toggle_gateway_status_url = "";
+
+            if ($toggleStatus == 'ON') {
+                //Turn Off Service
+                $toggle_gateway_status_url = "http://" . $gatewayIP . ":8000/api/v1/up/default/drop/firewall/policy";
+            }else {
+                //Turn On Service
+                $toggle_gateway_status_url = "http://" . $gatewayIP . ":8000/api/v1/down/default/drop/firewall/policy";
+            }
+
+            if ($serviceProto == "1") {
+                $serviceProto = "tcp";
+            }else {
+                $serviceProto = "udp";
+            }
+
+            $post = [
+                'gatewayAccessToken' => $gatewayData['0']['gatewayAccessToken'],
+                'serviceProto' => $serviceProto,
+                'servicePort' => $servicePort
+            ];
+
+            # Send Request to Gateway Server to Turn on Default Drop Firewall Policy
+            $ch = curl_init($toggle_gateway_status_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            return response()->json(array('status' => true), 201);
+
+        }else {
+            return response()->json(array('status' => false), 200);
+        }
+
+    }   
 
     //userGatewayDeleteService
     public function userGatewayDeleteService(Request $request)
