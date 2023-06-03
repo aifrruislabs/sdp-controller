@@ -1,0 +1,69 @@
+table {
+    width: 100%;
+}
+
+table tr td {
+    padding: 10px;
+}
+
+.table tr td {
+    padding: 10px;
+    border: 1px solid #eee;
+}
+
+.minheight-pricing {
+    min-height: 500px;
+}
+
+.well-bordered {
+    border: 1px solid #eeeeee; 
+    padding: 15px; 
+    border-radius: 5px;
+}
+
+.min-400-height {
+    min-height: 400px;
+}
+
+.center {
+    text-align: center;
+}
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.row {
+    margin: 0;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+.navbar-custom {
+    border-radius: 0px;
+    background-color: #008E9B;
+    color: white;
+}
+
+.navbar-brand { 
+    color: white;
+}
+
+.navbar-custom ul li a {
+    color: white;
+}
+
+.navbar-custom ul li a:hover {
+    background-color: #0ab2c2;
+    color: white;
+}
