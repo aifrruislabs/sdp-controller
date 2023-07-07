@@ -41,12 +41,6 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
-	//Does Gateway Collect Logs
-	Route::get('/does/gateway/collect/logs', ['uses' => 'GatewayLogController@doesGatewayCollectLogs']);
-
-	//Upload Log Collection for Gateway
-	Route::post('/upload/log/collection/gateway', ['uses' => 'GatewayLogController@uploadLogCollection']);
-
 	//Toggle Default Drop Firewall Policy on SDP Gateway
 	Route::post('/toggle/default/drop/firewall/policy/gateway', ['uses' => 'GatewayController@toggleDefaultDropFirewallPolicy']);
 
@@ -194,6 +188,12 @@ Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], functio
 //Gateway Routes
 Route::group(['prefix' => 'v1', 'middleware' => 'gatewayAuthMiddleware'], function () {
 
+	//Does Gateway Collect Logs
+	Route::get('/does/gateway/collect/logs', ['uses' => 'GatewayLogController@doesGatewayCollectLogs']);
+
+	//Upload Log Collection for Gateway
+	Route::post('/upload/log/collection/gateway', ['uses' => 'GatewayLogController@uploadLogCollection']);
+	
 	//Post TX Gateway Stats
 	Route::post('/post/gateway/network/traffic/tx', ['uses' => 'GatewayNetworkTrafficController@postGatewayTrafficTx']);
 
