@@ -26,7 +26,11 @@ class GatewayLogController extends Controller
         if (sizeof($gatewayData) == 1) {
 
             if ($gatewayData['0']['userId'] == $userId) {
-                return response()->json(array('status' => true, 'does' => $gatewayData['0']['collectLogs']), 200);
+                return response()->json(array(
+                    'status' => true, 
+                    'does' => $gatewayData['0']['collectLogs'],
+                    'period' => $gatewayData['0']['logsCollectionPeriod']
+                ), 200);
             }else {
                 return response()->json(array('status' => false, 'message' => 'Un-Authorized'), 200);
             }
