@@ -19,7 +19,9 @@ class Gateway extends Model
 
         'gatewayNetworkAccessibility', 'gatewayIP', 
 
-    	'gatewayAccessToken', 'gatewayServicesList'
+    	'gatewayAccessToken', 'gatewayServicesList',
+
+        'collectLogs', 'logsCollectionPeriod'
 
     ];
 }

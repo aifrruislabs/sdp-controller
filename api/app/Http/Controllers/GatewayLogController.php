@@ -4,11 +4,39 @@ namespace App\Http\Controllers;
 
 use Storage;
 
+use App\Gateway;
 use App\GatewayLog;
 use Illuminate\Http\Request;
 
 class GatewayLogController extends Controller
 {
+    //doesGatewayCollectLogs
+    public function doesGatewayCollectLogs(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,
+                [
+                    'gatewayId' => 'required'
+                ]);
+                
+        $userId = $request->header('userId');
+
+        $gatewayData = Gateway::where('id', $request->gatewayId)->get()->toArray();
+
+        if (sizeof($gatewayData) == 1) {
+
+            if ($gatewayData['0']['userId'] == $userId) {
+                return response()->json(array('status' => true, 'does' => $gatewayData['0']['collectLogs']), 200);
+            }else {
+                return response()->json(array('status' => false, 'message' => 'Un-Authorized'), 200);
+            }
+
+        }else {
+            return response()->json(array('status' => true), 200);
+        }
+        
+    }
+
     //uploadLogCollection
     public function uploadLogCollection(Request $request)
     {
@@ -37,7 +65,7 @@ class GatewayLogController extends Controller
 
             //Uploading File
             $storePcap = Storage::disk('local')
-                            ->put("/public/GATEWAY_LOG/".$gatewayId."/".$pcapId.".pcap",
+                            ->put("/public/GATEWAY_LOG/".$gatewayId."/".$pcapId,
                                  $request->gatewayPcapLog, 'public');
 
             //Update Gateway Pcap Status

@@ -25,6 +25,9 @@ class CreateGatewaysTable extends Migration
             $table->longText('gatewayAccessToken')->nullable();
             $table->longText('gatewayServicesList')->nullable();
 
+            $table->integer('collectLogs')->default(0);
+            $table->integer('logsCollectionPeriod')->default(30);
+
             $table->timestamps();
         });
     }

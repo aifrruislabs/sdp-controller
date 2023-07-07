@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Does Gateway Collect Logs
+	Route::get('/does/gateway/collect/logs', ['uses' => 'GatewayLogController@doesGatewayCollectLogs']);
+
 	//Upload Log Collection for Gateway
 	Route::post('/upload/log/collection/gateway', ['uses' => 'GatewayLogController@uploadLogCollection']);
 
