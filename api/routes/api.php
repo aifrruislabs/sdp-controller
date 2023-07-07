@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Upload Log Collection for Gateway
+	Route::post('/upload/log/collection/gateway', ['uses' => 'GatewayLogController@uploadLogCollection']);
+
 	//Toggle Default Drop Firewall Policy on SDP Gateway
 	Route::post('/toggle/default/drop/firewall/policy/gateway', ['uses' => 'GatewayController@toggleDefaultDropFirewallPolicy']);
 

@@ -15,6 +15,10 @@ class CreateGatewayLogsTable extends Migration
     {
         Schema::create('gateway_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('userId');
+            $table->integer('gatewayId');
+            $table->string('gatewayPcapTime')->nullable();
+            $table->integer('gatewayPcapLog')->nullable();
             $table->timestamps();
         });
     }
