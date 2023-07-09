@@ -48,8 +48,7 @@ class GatewayLogController extends Controller
         $this->validate($request,
                 [
                     'gatewayId' => 'required',
-                    'gatewayPcapTime' => 'required',
-                    'gatewayPcapLog' => 'required'
+                    'gatewayPcapTime' => 'required'
                 ]);
 
         $userId = $request->header('userId');
