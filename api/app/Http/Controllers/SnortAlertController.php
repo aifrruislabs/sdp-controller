@@ -23,7 +23,7 @@ class SnortAlertController extends Controller
         $log_chunk = $request->log_chunk;
 
         //Uploading New Snort Alert
-        $newSnortAlert = SnortAlert();
+        $newSnortAlert = new SnortAlert();
         $newSnortAlert->userId = $userId;
         $newSnortAlert->gatewayId = $gatewayId;
         $newSnortAlert->snortFullAlert = $log_chunk;
