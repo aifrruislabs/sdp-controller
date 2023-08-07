@@ -15,6 +15,20 @@ class CreateSnortAlertsTable extends Migration
     {
         Schema::create('snort_alerts', function (Blueprint $table) {
             $table->bigIncrements('id');
+
+            $table->integer('userId')->nullable();
+            $table->integer('gatewayId')->nullable();
+
+            $table->integer('incidentResponseId')->nullable();
+            $table->integer('incidentResponseStatus')->default(0);
+
+            $table->longText('snortFullAlert')->nullable();
+
+            $table->string('snortAlertCode')->nullable();
+            $table->string('snortAlertTitle')->nullable();
+            $table->string('snortAlertClassification')->nullable();
+            $table->string('snortAlertPriority')->nullable();
+
             $table->timestamps();
         });
     }

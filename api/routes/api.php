@@ -188,6 +188,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], functio
 //Gateway Routes
 Route::group(['prefix' => 'v1', 'middleware' => 'gatewayAuthMiddleware'], function () {
 
+	//Upload Gateway Snort Alert
+	Route::post('/upload/gateway/snort/alert', ['uses' => 'GatewayLogController@uploadGatewaySnortAlert']);
+
 	//Does Gateway Collect Logs
 	Route::get('/does/gateway/collect/logs', ['uses' => 'GatewayLogController@doesGatewayCollectLogs']);
 

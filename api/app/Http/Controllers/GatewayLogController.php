@@ -41,6 +41,23 @@ class GatewayLogController extends Controller
         
     }
 
+    private function pcap_analyzer()
+    {
+
+        // Load the PCAP file.
+        $pcap = file_get_contents('sample.pcap');
+
+        // Analyze the PCAP file for malware.
+        $malware = analyze_pcap($pcap);
+
+        // Return the response in JSON format.
+        echo json_encode($malware);
+
+        function analyze_pcap($pcap) {
+        // TODO: Implement the malware analysis logic here.
+        }
+    }
+
     //uploadLogCollection
     public function uploadLogCollection(Request $request)
     {
@@ -62,19 +79,29 @@ class GatewayLogController extends Controller
         $newGatewayPcapLog->gatewayId = $gatewayId;
         $newGatewayPcapLog->gatewayPcapTime = $gatewayPcapTime;
         $newGatewayPcapLog->gatewayPcapLog = 0;
+        $newGatewayPcapLog->pcapAnalysis = 0;
 
         if ($newGatewayPcapLog->save()) {
             $pcapId = $newGatewayPcapLog->id;
 
             //Uploading File
             $storePcap = Storage::disk('local')
-                            ->put("/public/GATEWAY_LOG/".$gatewayId."/".$pcapId,
+                            ->put("/public/GATEWAY_LOG/".$gatewayId."/".$pcapId.".pcap",
                                  $request->gatewayPcapLog, 'public');
+
+            //Analyse Pcap File
+            $analyse_command = "";
+
+            $resultAnalysis = array();
 
             //Update Gateway Pcap Status
             $updateGatewayPcapStatus = GatewayLog::find($pcapId);
             $updateGatewayPcapStatus->gatewayPcapLog = 1;
+            $updateGatewayPcapStatus->pcapAnalysis = 1;
+            $updateGatewayPcapStatus->resultAnalysis = json_encode($resultAnalysis);
             $updateGatewayPcapStatus->update();
+
+            
 
             //Return 201 Response Status
             return response()->json(array('status' => true), 201);

@@ -15,6 +15,11 @@ class CreateLoginHistoriesTable extends Migration
     {
         Schema::create('login_histories', function (Blueprint $table) {
             $table->bigIncrements('id');
+            
+            $table->integer('userId');
+            $table->string('userOs')->nullable();
+            $table->string('userIp')->nullable();
+
             $table->timestamps();
         });
     }

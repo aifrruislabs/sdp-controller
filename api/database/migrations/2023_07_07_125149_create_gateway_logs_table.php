@@ -19,6 +19,8 @@ class CreateGatewayLogsTable extends Migration
             $table->integer('gatewayId');
             $table->string('gatewayPcapTime')->nullable();
             $table->integer('gatewayPcapLog')->nullable();
+            $table->string('pcapAnalysis')->nullable();
+            $table->longText('resultAnalysis')->nullable();
             $table->timestamps();
         });
     }
