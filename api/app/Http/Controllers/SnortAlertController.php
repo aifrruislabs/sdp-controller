@@ -27,6 +27,13 @@ class SnortAlertController extends Controller
         $priority = "";
         $snortAlertCode = "";
         $snortAlertTitle = "";
+
+        //Process for More Details
+        $logChunkExploded = explode(" ", $log_chunk);
+
+        //Get Snort Alert Code
+        $snortAlertCode = @str_replace("]", "", @$logChunkExploded[1]);
+        $snortAlertCode = @str_replace("[", "", $snortAlertCode);
         
         //Uploading New Snort Alert
         $newSnortAlert = new SnortAlert();
