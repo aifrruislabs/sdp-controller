@@ -29,6 +29,9 @@ class CreateSnortAlertsTable extends Migration
             $table->string('snortAlertClassification')->nullable();
             $table->string('snortAlertPriority')->nullable();
 
+            $table->string('srcIP')->nullable();
+            $table->string('dstIp')->nullable();
+
             $table->timestamps();
         });
     }
