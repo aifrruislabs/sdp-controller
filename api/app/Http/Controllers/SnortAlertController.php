@@ -20,18 +20,24 @@ class SnortAlertController extends Controller
         $gatewayId = $request->header('gatewayId');
 
         //Get Log Chunk
-        $log_chunk = $request->log_chunk;
+        $log_chunk_data = $request->log_chunk;
+        $log_chunk = json_encode($log_chunk_data);
 
+        $classification = "";
+        $priority = "";
+        $snortAlertCode = "";
+        $snortAlertTitle = "";
+        
         //Uploading New Snort Alert
         $newSnortAlert = new SnortAlert();
         $newSnortAlert->userId = $userId;
         $newSnortAlert->gatewayId = $gatewayId;
         $newSnortAlert->snortFullAlert = $log_chunk;
         $newSnortAlert->incidentResponseStatus = 0;
-        $newSnortAlert->snortAlertCode = "";
-        $newSnortAlert->snortAlertTitle = "";
-        $newSnortAlert->snortAlertClassification = "";
-        $newSnortAlert->snortAlertPriority = "";
+        $newSnortAlert->snortAlertCode = $snortAlertCode;
+        $newSnortAlert->snortAlertTitle = $snortAlertTitle;
+        $newSnortAlert->snortAlertClassification = $classification;
+        $newSnortAlert->snortAlertPriority = $priority;
 
         if ($newSnortAlert->save()) {
             return response()->json(array('status' => true), 201);
