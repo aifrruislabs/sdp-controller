@@ -57,8 +57,10 @@ class SnortAlertController extends Controller
         $ipChunkAlpha = @explode(" ", $ipAddresses[0]);
         $ipChunkBeta = @explode(" ", $ipAddresses[1]);
 
-        $srcIP =  @$ipChunkAlpha[sizeof($ipChunkAlpha) - 2];
-        $dstIp = @explode('"', $ipChunkBeta[1])[0];
+        $dstIp =  @$ipChunkAlpha[sizeof($ipChunkAlpha) - 2];
+        $srcIpRes = @explode('"', $ipChunkBeta[1])[0];
+
+        $srcIP = @explode("\", $srcIpRes)[0];
 
 
         //Uploading New Snort Alert
