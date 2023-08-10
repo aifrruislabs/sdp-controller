@@ -19,9 +19,11 @@ class CreateIncidentResponsesTable extends Migration
             $table->integer('userId')->nullable();
             $table->integer('gatewayId')->nullable();
 
-            $table->integer('snortAlertId')->nullable();
-            $table->integer('snortIncidentTypeId')->nullable();
-            $table->integer('incidentResponseActionId')->nullable();
+            $table->integer('incidentClassTypeId')->nullable();
+            $table->string('incidentClassTypeDescription')->nullable();
+
+            $table->integer('incidentResponseId')->nullable();
+            $table->string('incidentResponseDescription')->nullable();
 
             $table->timestamps();
         });

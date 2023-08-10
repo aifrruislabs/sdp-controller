@@ -9,9 +9,9 @@ class IncidentResponse extends Model
     //Fillables
     protected $fillable = [
 
-        'userId', 'gatewayId', 'snortAlertId', 'snortIncidentTypeId',
+        'userId', 'gatewayId', 'incidentClassTypeId', 'incidentClassTypeDescription', 
 
-        'incidentResponseActionId'
+        'incidentResponseId', 'incidentResponseDescription'
 
     ];
 }

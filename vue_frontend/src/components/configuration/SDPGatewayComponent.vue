@@ -473,7 +473,7 @@ export default {
 
         },
 
-        pullGatewaysList() {
+        async pullGatewaysList() {
 
             axios.get(this.$store.state.baseApi + "/api/v1/user/gateway/get/all", { 
                     headers : {
