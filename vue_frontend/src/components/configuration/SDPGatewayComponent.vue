@@ -55,15 +55,22 @@
                                 }</td>
 
                         <td style="width: 150px;">
+                            <router-link :to="{ path: '/snort/gateway/alerts', query: { gatewayId: gateway.id }}">
+                                <button class="btn btn-danger form-control">
+                                    <i class="fa fa-spinner" aria-hidden="true"></i>&nbsp;Snort Alerts</button>
+                            </router-link>
+                            <br/><br/>
                             <router-link :to="{ path: '/gateway/view/statistics', query: { gatewayId: gateway.id }}">
-                                <button class="btn btn-primary">View Statistics</button>
+                                <button class="btn btn-primary form-control">
+                                    <i class="fa fa-opencart" aria-hidden="true"></i>&nbsp;View Statistics</button>
                             </router-link>
                         </td>
 
                         <td style="width: 150px;">
                             <button class="btn btn-success"
                             data-toggle="modal" data-target="#populateGatewayServicesModal" 
-                            @click="populateServicesonModal(gateway.id)">Manage Services</button>
+                            @click="populateServicesonModal(gateway.id)">
+                            <i class="fa fa-fort-awesome" aria-hidden="true"></i>&nbsp;Manage Services</button>
                         </td>
                         
                         <td>

@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Get Snort Read Alerts
+	Route::get('/snort/read/gateway/alerts', ['uses' => 'SnortAlertController@snortReadGatewayAlerts']);
+
 	//Toggle Default Drop Firewall Policy on SDP Gateway
 	Route::post('/toggle/default/drop/firewall/policy/gateway', ['uses' => 'GatewayController@toggleDefaultDropFirewallPolicy']);
 

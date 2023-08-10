@@ -46,6 +46,9 @@
 
                             <li><router-link to="/trust/score/policies" style="color: black;">Trust Score Policies</router-link></li>
                             <li role="separator" class="divider"></li>
+
+                            <li><router-link to="/incident/response/policies" style="color: black;">Incident Response Policies</router-link></li>
+                            <li role="separator" class="divider"></li>
                         </ul>
                     </li>
 

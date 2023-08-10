@@ -33,6 +33,9 @@ import PricingComponent from '@/components/pages/PricingComponent.vue'
 
 import TrustScoresComponent from '@/components/pages/TrustScoresComponent.vue'
 
+import SnortAlertComponent from '@/components/configuration/SnortAlertComponent.vue'
+import IncidentResponsePoliciesComponent from '@/components/configuration/IncidentResponsePolicies.vue'
+
 const authMiddleware = (to, from, next) => {
 
 	console.log(store.state.user.authToken)
@@ -55,6 +58,12 @@ export default new Router({
 	mode: 'hash',
 
 	routes: [
+
+		//Snort Alerts
+		{ path: '/snort/gateway/alerts', component: SnortAlertComponent, name: 'snort-gateway-alerts' },
+
+		//Incident Response Policies
+		{ path: '/incident/response/policies', component: IncidentResponsePoliciesComponent, name: 'incident-response-policies'},
 
 		//Pricing
 		{ path: '/pricing', component: PricingComponent, name: 'pricing' },

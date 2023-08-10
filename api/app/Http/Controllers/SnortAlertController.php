@@ -7,6 +7,65 @@ use Illuminate\Http\Request;
 
 class SnortAlertController extends Controller
 {
+    //snortReadGatewayAlerts
+    public function snortReadGatewayAlerts(Request $request)
+    {
+        //Input Validation
+        $this->validate($request,
+                [
+                    'gatewayId' => 'required'
+                ]);
+
+
+        $gatewayId = $request->gatewayId;
+
+        $srcIP = "";
+        $dstIp = "";
+        $snortFullAlert = "";
+        $snortAlertCode = "";
+        $snortAlertTitle = "";
+        $snortAlertClassification = "";
+        $snortAlertPriority = "";
+        $incidentResponse = "";
+        $createdAt = "";
+
+        //Get Alerts
+        $gatewaySnortAlerts = SnortAlert::where('gatewayId', $gatewayId)
+                                        ->orderBy('created_at', 'DESC')
+                                        ->skip(0)->take(100);
+
+        //Response Full Array
+        $dataRes = array();
+
+        //Get Top 100
+        foreach ($gatewaySnortAlerts as $gateAlert) {
+            $srcIP = $gateAlert->srcIP;
+            $dstIp = $gateAlert->dstIp;
+            $snortFullAlert = $gateAlert->snortFullAlert;
+            $snortAlertCode = $gateAlert->snortAlertCode;
+            $snortAlertTitle = $gateAlert->snortAlertTitle;
+            $snortAlertClassification = $gateAlert->snortAlertClassification;
+            $snortAlertPriority = $gateAlert->snortAlertPriority;
+            $incidentResponse = $gateAlert->incidentResponseStatus;
+            $createdAt = $gateAlert->created_at->diffForHumans();
+
+            $dataRes[] = array(
+                'srcIP' => $srcIP,
+                'dstIp' => $dstIp,
+                'snortFullAlert' => $snortFullAlert,
+                'snortAlertCode' => $snortAlertCode,
+                'snortAlertTitle' => $snortAlertTitle,
+                'snortAlertClassification' => $snortAlertClassification,
+                'snortAlertPriority' => $snortAlertPriority,
+                'incidentResponse' => $incidentResponse,
+                'createdAt' => $createdAt 
+            );     
+        }
+              
+        return response()->json(array('data' => $dataRes), 200);
+        
+    }
+
     //uploadGatewaySnortAlert
     public function uploadGatewaySnortAlert(Request $request)
     {

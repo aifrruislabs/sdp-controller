@@ -13,7 +13,9 @@ class SnortAlert extends Model
         
         'snortFullAlert', 'snortAlertCode', 'snortAlertTitle', 
         
-        'snortAlertClassification', 'snortAlertPriority'
+        'snortAlertClassification', 'snortAlertPriority', 
+
+        'srcIP', 'dstIp'
 
     ];
 }
