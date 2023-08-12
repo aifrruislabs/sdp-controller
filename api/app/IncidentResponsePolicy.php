@@ -4,8 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class IncidentResponse extends Model
+class IncidentResponsePolicy extends Model
 {
+
+	//Change Table Name
+	protected $table = 'incident_response_policies'
+
     //Fillables
     protected $fillable = [
 

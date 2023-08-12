@@ -101,8 +101,6 @@ class GatewayLogController extends Controller
             $updateGatewayPcapStatus->resultAnalysis = json_encode($resultAnalysis);
             $updateGatewayPcapStatus->update();
 
-            
-
             //Return 201 Response Status
             return response()->json(array('status' => true), 201);
 

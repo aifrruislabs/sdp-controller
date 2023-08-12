@@ -70,7 +70,7 @@
                             <td>Incident Class Type</td>
                             <td>
                                 <select class="form-control" v-model="form_snort_class">
-                                    <option v-for="snort_class in snort_classes" :key="snort_class.id">
+                                    <option v-for="snort_class in snort_classes" :key="snort_class.id" :value="snort_class.id">
                                         {{ snort_class.description }}
                                     </option>
                                 </select>
@@ -82,7 +82,7 @@
                             <td>
                                 <select class="form-control" v-model="form_icd_response">
                                     <option v-for="incident_response in gateway_incident_response" 
-                                    :key="incident_response.id">{{ incident_response.description }}</option>
+                                    :key="incident_response.id" :value="incident_response.id">{{ incident_response.description }}</option>
                                 </select>
                             </td>
                         </tr>
@@ -122,7 +122,7 @@
             'form_icd_response': 1,
             'snort_classes': [],
             'gateway_incident_response': []
-            
+           
         }
 
     },
@@ -131,7 +131,7 @@
 
         //Add New Incident Response Policy
         addNewIncidentResponsePolicy() {
-
+            alert("Gateway : " + this.form_gateway + " Snort : " + this.form_snort_class + " Response : " + this.form_icd_response);
         },
 
 

@@ -13,7 +13,7 @@ class CreateIncidentResponsesTable extends Migration
      */
     public function up()
     {
-        Schema::create('incident_responses', function (Blueprint $table) {
+        Schema::create('incident_response_policies', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->integer('userId')->nullable();
@@ -36,6 +36,6 @@ class CreateIncidentResponsesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('incident_responses');
+        Schema::dropIfExists('incident_response_policies');
     }
 }

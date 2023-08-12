@@ -41,8 +41,11 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Add New Incident Responce Police
+	Route::post('/new/icd/response/policy', ['uses' => 'IncidentResponsePolicyController@newIcdResponsePolicy']);
+
 	//Get Snort ICD Responses
-	Route::get('/get/snort/icd/responses', ['uses' => 'IncidentResponseController@getSnortICDResponses']);
+	Route::get('/get/snort/icd/responses', ['uses' => 'IncidentResponsePolicyController@getSnortICDResponses']);
 
 	//Get Snort Classification List
 	Route::get('/get/snort/classification/list', ['uses' => 'SnortAlertController@getSnortClassificationList']);
