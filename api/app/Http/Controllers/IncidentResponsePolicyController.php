@@ -22,14 +22,14 @@ class IncidentResponseController extends Controller
 
         $gateway = $request->gateway;
         $snort_class = $request->snort_class;
-        $icd_response = $request->ics_response;
+        $icd_response = $request->icd_response;
 
         $newIcdPolicy = new IncidentResponsePolicy();
         $newIcdPolicy->userId = $userId;
         $newIcdPolicy->gatewayId = $gateway;
         $newIcdPolicy->incidentClassTypeId = $snort_class;
         $newIcdPolicy->incidentClassTypeDescription = getSnortClassList()[$snort_class-1]['description'];
-        $newIcdPolicy->incidentResponseId = $icd_response
+        $newIcdPolicy->incidentResponseId = $icd_response;
         $newIcdPolicy->incidentResponseDescription = getSnortICDResponseList()[$icd_response-1]['description'];
         
         if ($newIcdPolicy->save()) {
