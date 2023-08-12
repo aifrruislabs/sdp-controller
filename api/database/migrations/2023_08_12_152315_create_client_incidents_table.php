@@ -15,6 +15,13 @@ class CreateClientIncidentsTable extends Migration
     {
         Schema::create('client_incidents', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('clientId')->nullable();
+            $table->integer('snortAlertId')->nullable();
+            $table->integer('snortClassId')->nullable();
+            $table->integer('incidentResponseId')->nullable();
+            $table->string('incidentTitle')->nullable();
+            $table->string('incidentResponse')->nullable();
+            $table->string('incidentResolved')->default(0);
             $table->timestamps();
         });
     }

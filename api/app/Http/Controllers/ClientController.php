@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Storage;
 
 use App\Client;
+use App\ClientIncident;
+
 use App\Gateway;
 use App\Service;
 use App\ClientMac;
@@ -26,7 +28,12 @@ class ClientController extends Controller
     //clientPullICDevents
     public function clientPullICDevents(Request $request)
     {
-        
+        $clientId = $request->header('clientId');
+
+        $icdEvents = ClientIncident::where('clientId', $clientId)
+                        ->orderBy('created_at', 'DESC')->get();
+
+        return response()->json(array('data' => $icdEvents), 200);
     }
 
     //updateClientPublicIP

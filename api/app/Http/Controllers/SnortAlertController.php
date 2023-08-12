@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
+use App\ClientIncident;
+
 use App\SnortAlert;
 use Illuminate\Http\Request;
 
@@ -152,7 +155,73 @@ class SnortAlertController extends Controller
         $userId = $snortAlert->userId;
         $gatewayId = $snortAlert->gatewayId;
         
+        $snortAlertClassification = $snortAlert->snortAlertClassification;
 
+        $srcIP = explode(":", $snortAlert->srcIP)[0];
+        $dstIp = explode(":", $snortAlert->dstIp)[0];
+
+        $networkClients = Client::all();
+
+        $clientId = "";
+        $clientPublicIP = "";
+
+        foreach($networkClients as $networkClient) {
+            if ( ($srcIP == $networkClient->publicIp) ) {
+                $clientId = $networkClient->id;
+                $clientPublicIP = $networkClient->publicIp;
+            }
+
+            if ( ($dstIp == $networkClient->publicIp) ) {
+                $clientId = $networkClient->id;
+                $clientPublicIP = $networkClient->publicIp;
+            }
+        }
+
+        //Add New Incident for User
+        if (!empty($clientId) && !empty($clientPublicIP)) {
+
+            $snortClassId = "";
+
+            foreach (getSnortClassList() as $snortClass) {
+               if ($snortClass['description'] == $snortAlertClassification) {
+                $snortClassId = $snortClass['id'];
+               }
+            } 
+
+            //Fetch Policy for This Alert Class
+            $fetchPolicy = IncidentResponsePolicy::where('incidentClassTypeId', $snortClassId)
+                                ->get()->toArray();
+
+            if (sizeof($fetchPolicy) != 0) {
+
+                $incidentResponseId = $fetchPolicy['0']['incidentResponseId'];
+                $incidentResponseDescription = $fetchPolicy['0']['incidentResponseDescription'];
+
+                $newClientIncident = new ClientIncident();
+                $newClientIncident->clientId = $clientId;
+                $newClientIncident->snortAlertId = $snortId;
+                $newClientIncident->snortClassId = $snortClassId;
+                $newClientIncident->incidentResponseId = $incidentResponseId;
+                $newClientIncident->incidentTitle = $snortAlertClassification;
+                $newClientIncident->incidentResponse =  $incidentResponseDescription; 
+                $newClientIncident->incidentResolved = 0;     
+                $newClientIncident->save();
+
+            }else {
+                //Update No Policy for Attack
+                $updateSnortAlert = SnortAlert::find($snortId);
+                $updateSnortAlert->incidentResponseStatus = 999;
+                $updateSnortAlert->incidentResponseId = 999;
+                $updateSnortAlert->update();
+            }
+
+        }else {
+            //Update No Client from Inside
+            $updateSnortAlert = SnortAlert::find($snortId);
+            $updateSnortAlert->incidentResponseStatus = 0;
+            $updateSnortAlert->incidentResponseId = 0;
+            $updateSnortAlert->update();
+        }
     }
 
     //getSnortClassificationList
