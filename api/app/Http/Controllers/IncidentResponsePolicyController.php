@@ -10,6 +10,12 @@ class IncidentResponsePolicyController extends Controller
     //Delete ICD Policy
     public function deleteICDPolicy(Request $request)
     {
+        //Input Validate
+        $this->validate($request,
+                [
+                    'icdPolicyId' => 'required'
+                ]);
+
         $icdPolicyId = $request->icdPolicyId;
 
         $deleteICDPolicy = IncidentResponsePolicy::find($icdPolicyId);

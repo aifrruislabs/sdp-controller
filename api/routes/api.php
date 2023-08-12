@@ -173,6 +173,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'userAuthMiddleware'], function 
 //Client Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], function () {
 
+	//Update Client Public IP
+	Route::post('/update/client/public/ip', ['uses' => 'ClientController@updateClientPublicIP']);
+
 	//Validate Geo Location Data
 	Route::post('/validate/client/geo/location', ['uses' => 'ClientGeoLocationController@validateClientGeoLocation']);
 		
@@ -199,6 +202,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'clientAuthMiddleware'], functio
 
 	//Pull Granted Services List
 	Route::get('/client/pull/granted/services', ['uses' => 'ClientController@clientPullGrantedServices']);
+
+	//Pull Client Incidents Events
+	Route::get('/client/pull/icd/events', ['uses' => 'ClientController@clientPullICDevents']);
 	
 });
 

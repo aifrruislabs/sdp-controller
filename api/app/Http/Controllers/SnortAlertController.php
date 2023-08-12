@@ -136,10 +136,23 @@ class SnortAlertController extends Controller
         $newSnortAlert->snortAlertPriority = $priority;
 
         if ($newSnortAlert->save()) {
+            //Calculate Event According to Clients
+            $this->calculateEventsAcrdngToClients($newSnortAlert);
+
             return response()->json(array('status' => true), 201);
         }else {
             return response()->json(array('status' => false), 200);
         }
+    }
+
+    //calculateEventsAcrdngToClients
+    private function calculateEventsAcrdngToClients($snortAlert)
+    {
+        $snortId = $snortAlert->id;
+        $userId = $snortAlert->userId;
+        $gatewayId = $snortAlert->gatewayId;
+        
+
     }
 
     //getSnortClassificationList

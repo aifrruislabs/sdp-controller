@@ -22,9 +22,10 @@
                 <td>Middle Name</td>
                 <td>Last Name</td>
                 <td>Client ID</td>
+                <td>Public IP</td>
                 <td>Trust Score</td>
                 <td>Username</td>
-                <td>Service Access</td>
+                <td>Manage</td>
                 <td>Actions</td>
             </tr>
 
@@ -34,11 +35,15 @@
                 <td>{{ client.middleName }}</td>
                 <td>{{ client.lastName }}</td>
                 <td>{{ client.clientId }}</td>
+                <td>{{ client.publicIp }}</td>
                 <td>{{ client.totalTrustScore }} %</td>
                 <td>{{ client.username }}</td>
                 <td>
                     <button class="btn btn-primary form-control" @click="pullGatewayServicesList(client.id)"
                     data-toggle="modal" data-target="#serviceAccessModal">Service Access</button>
+                    <br/><br/>
+
+                    <button class="btn btn-success form-control">Incident Events</button>
                 </td>
 
                 <td>

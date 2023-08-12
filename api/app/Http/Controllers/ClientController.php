@@ -23,6 +23,34 @@ use App\Http\Controllers\ClientController;
 
 class ClientController extends Controller
 {
+    //clientPullICDevents
+    public function clientPullICDevents(Request $request)
+    {
+        
+    }
+
+    //updateClientPublicIP
+    public function updateClientPublicIP(Request $request)
+    {
+        //Input Validation   
+        $this->validate($request, [
+                'clientPublicIp' => 'required'
+                ]);
+
+        $clientId = $request->header('clientId');
+        $clientPublicIp = $request->clientPublicIp;
+
+        //Update Client Public IP
+        $updateClientIP = new Client();
+        $updateClientIP->publicIp = $clientPublicIp;
+
+        if ($updateClientIP->update()) {
+            return response()->json(array('status' => true), 201);
+        }else {
+            return response()->json(array('status' => false), 200);
+        }
+    }
+
     //getNextPageClientContinue
     public function getNextPageClientContinue(Request $request)
     {

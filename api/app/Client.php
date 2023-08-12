@@ -9,9 +9,9 @@ class Client extends Model
     //Fillables
     protected $fillable = [
 
-    	'userId', 'gatewayId', 'clientId', 'firstName', 'middleName', 'lastName', 
+    	'userId', 'gatewayId', 'clientId', 'publicIp', 'firstName', 'middleName', 'lastName', 
 
-    	'username', 'password', 'accessToken', 'totalTrustScore', 'encryptionKey', 'hmacKey'
+    	'username', 'password', 'accessToken', 'totalTrustScore', 'encryptionKey', 'hmacKey',
 
     ];
 }

@@ -20,6 +20,7 @@ class CreateClientsTable extends Migration
             $table->string('gatewayId')->nullable();
 
             $table->string('clientId')->nullable();
+            $table->string('publicIp')->nullable();
 
             $table->string('firstName')->nullable();
             $table->string('middleName')->nullable();
