@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\IncidentResponsePolicy;
 use Illuminate\Http\Request;
 
-class IncidentResponseController extends Controller
+class IncidentResponsePolicyController extends Controller
 {
     //Add New Incident Response Policy
     public function newIcdResponsePolicy(Request $request)
