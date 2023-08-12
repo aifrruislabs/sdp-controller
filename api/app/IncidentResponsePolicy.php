@@ -8,7 +8,7 @@ class IncidentResponsePolicy extends Model
 {
 
 	//Change Table Name
-	protected $table = 'incident_response_policies'
+	protected $table = 'incident_response_policies';
 
     //Fillables
     protected $fillable = [
