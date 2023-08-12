@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Delete ICD Response 
+	Route::delete('/delete/icd/response/policy', ['uses' => 'IncidentResponsePolicyController@deleteICDPolicy']);
+
 	//Get ICD Responses Policies
 	Route::get('/get/icd/responses/policies', ['uses' => 'IncidentResponsePolicyController@getPoliciesList']);
 

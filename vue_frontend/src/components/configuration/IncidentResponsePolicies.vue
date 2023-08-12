@@ -28,8 +28,8 @@
 
             <tr v-for="(incident_policy, id) in icd_policies_list" :key="incident_policy.id">
                 <td>{{ id += 1 }}</td>
-                <td>{{ incident_policy.class_type }}</td>
-                <td>{{ incident_policy.icd_response }}</td>
+                <td>{{ incident_policy.incidentClassTypeDescription }}</td>
+                <td>{{ incident_policy.incidentResponseDescription }}</td>
                 <td>
                     <div style="width: 100%;">
                         <div class="float-left">
@@ -37,7 +37,7 @@
                         </div>
 
                         <div class="float-right">
-                            <i class="fa fa-times" 
+                            <i class="fa fa-times" @click="deleteICDPolicy(incident_policy.id)"
                                 style="font-size: 24px; color: red;" aria-hidden="true"></i>
                         </div>
                     </div>
@@ -130,6 +130,55 @@
     },
 
     methods: {
+
+        //Delete Incident Policy 
+        deleteICDPolicy(incident_response_id) {
+            
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {                      
+                        axios.delete(this.$store.state.baseApi + "/api/v1/delete/icd/response/policy?icdPolicyId="+incident_response_id,
+                            { 
+                            headers : {
+                                'Content-Type': 'application/json',
+                                userId: this.$store.getters.getAuthId,
+                                authToken: this.$store.getters.getAuthToken
+                            }
+
+                        })
+                        
+                        .then( (response) => {
+
+                            const resData = response.data
+
+                            if (resData['status'] == true) {
+                                Swal.fire(
+                                    'Success!',
+                                    'Incident Response Policy was Deleted Successfully',
+                                    'success'
+                                    ).then(function () {
+                                        window.location.reload()
+                                    });
+                            }else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Failed to delete Incident Response Policy. Please Try Again Later',
+                                    'error'
+                                    )
+                            }
+
+                        })
+                    }
+                })
+            
+        },
 
         //Add New Incident Response Policy
         addNewIncidentResponsePolicy() {
@@ -265,6 +314,9 @@
 
         //Pull Snort ICD Responses
         this.pullSnortICDResponses();
+
+        //Pull ICD Policies
+        this.pullICDResponcePolicies();
     }
 }
 

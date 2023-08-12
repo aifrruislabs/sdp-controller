@@ -7,6 +7,17 @@ use Illuminate\Http\Request;
 
 class IncidentResponsePolicyController extends Controller
 {
+    //Delete ICD Policy
+    public function deleteICDPolicy(Request $request)
+    {
+        $icdPolicyId = $request->icdPolicyId;
+
+        $deleteICDPolicy = IncidentResponsePolicy::find($icdPolicyId);
+        $deleteICDPolicy->delete();
+
+        return response()->json(array('status' => true), 200);
+    }
+
     //Get Policies List
     public function getPoliciesList(Request $request)
     {   
