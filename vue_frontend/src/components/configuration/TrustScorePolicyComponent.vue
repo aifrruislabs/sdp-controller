@@ -238,9 +238,7 @@ export default {
                  axios.post(this.$store.state.baseApi + "/api/v1/user/post/trust/score/policy", {
 
                             'serviceId': this.serviceId,
-
                             'scoreFactorId': this.scoreFactorId,
-
                             'scorePercent': this.scorePercent
 
                             }, 

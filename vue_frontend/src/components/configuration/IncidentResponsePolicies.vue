@@ -26,10 +26,10 @@
                 <td>Action</td>
             </tr>
 
-            <tr v-for="(incident_response, id) in gateway_incident_response" :key="incident_response.id">
+            <tr v-for="(incident_policy, id) in icd_policies_list" :key="incident_policy.id">
                 <td>{{ id += 1 }}</td>
-                <td>{{ incident_response.class_type }}</td>
-                <td>{{ incident_response.icd_response }}</td>
+                <td>{{ incident_policy.class_type }}</td>
+                <td>{{ incident_policy.icd_response }}</td>
                 <td>
                     <div style="width: 100%;">
                         <div class="float-left">
@@ -109,6 +109,7 @@
 <script>
 
     import axios from 'axios'
+    import Swal from 'sweetalert2'
 
     export default {
     name: 'IncidentResponsePolicies',
@@ -121,8 +122,9 @@
             'form_snort_class': 1,
             'form_icd_response': 1,
             'snort_classes': [],
-            'gateway_incident_response': []
-           
+            'gateway_incident_response': [],
+            'icd_policies_list': []
+            
         }
 
     },
@@ -131,9 +133,77 @@
 
         //Add New Incident Response Policy
         addNewIncidentResponsePolicy() {
-            alert("Gateway : " + this.form_gateway + " Snort : " + this.form_snort_class + " Response : " + this.form_icd_response);
+
+            axios.post(this.$store.state.baseApi + 
+            
+            "/api/v1/new/icd/response/policy",  {
+
+                'gateway': this.form_gateway,
+                'snort_class': this.form_snort_class,
+                'icd_response': this.form_icd_response
+                }, 
+
+                { 
+                    headers : {
+                        'Content-Type': 'application/json',
+                        userId: this.$store.getters.getAuthId,
+                        authToken: this.$store.getters.getAuthToken
+                    }
+
+                })
+                
+                .then( (response) => {
+
+                    const resData = response.data
+
+                    if (resData['status'] == true) {
+
+                        Swal.fire(
+                            'Success!',
+                            'New Incident Policy Was Added Successfully',
+                            'success'
+                            ).then(function () {
+                                window.location.reload();
+                            })
+
+                    }else {
+                        Swal.fire(
+                            'Error!',
+                            'Failed to Add New Incident Policy.',
+                            'error'
+                            )
+                    }
+
+                });
+            
         },
 
+
+        //Pull ICD Response Policy
+        async pullICDResponcePolicies() {
+
+            axios.get(this.$store.state.baseApi + 
+            
+            "/api/v1/get/icd/responses/policies", 
+
+                { 
+                    headers : {
+                        'Content-Type': 'application/json',
+                        userId: this.$store.getters.getAuthId,
+                        authToken: this.$store.getters.getAuthToken
+                    }
+
+                })
+                
+                .then( (response) => {
+
+                    const resData = response.data
+
+                    this.icd_policies_list = resData.data
+
+                });
+            
+        },
 
         //Pull Snort ICD Responses
         async pullSnortICDResponses() {

@@ -7,6 +7,18 @@ use Illuminate\Http\Request;
 
 class IncidentResponsePolicyController extends Controller
 {
+    //Get Policies List
+    public function getPoliciesList(Request $request)
+    {   
+        $userId = $request->header('userId');
+
+        //Get Policies List
+        $policiesList = IncidentResponsePolicy::where('userId', $userId)
+                            ->orderBy('created_at', 'DESC')->get();
+
+        return response()->json(array('data' => $policiesList), 200);
+    }
+
     //Add New Incident Response Policy
     public function newIcdResponsePolicy(Request $request)
     {

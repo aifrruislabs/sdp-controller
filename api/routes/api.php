@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'superAdminAuthMiddleware'], fun
 //Admin Middleware Level
 Route::group(['prefix' => 'v1', 'middleware' => 'normalAdminAuthMiddleware'], function () {
 
+	//Get ICD Responses Policies
+	Route::get('/get/icd/responses/policies', ['uses' => 'IncidentResponsePolicyController@getPoliciesList']);
+
 	//Add New Incident Responce Police
 	Route::post('/new/icd/response/policy', ['uses' => 'IncidentResponsePolicyController@newIcdResponsePolicy']);
 
