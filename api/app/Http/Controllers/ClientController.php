@@ -48,7 +48,7 @@ class ClientController extends Controller
         $clientPublicIp = $request->clientPublicIp;
 
         //Update Client Public IP
-        $updateClientIP = new Client();
+        $updateClientIP = Client::find($clientId);
         $updateClientIP->publicIp = $clientPublicIp;
 
         if ($updateClientIP->update()) {
