@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Client;
 use App\ClientIncident;
+use App\IncidentResponsePolicy;
 
 use App\SnortAlert;
 use Illuminate\Http\Request;
