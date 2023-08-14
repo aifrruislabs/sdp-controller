@@ -210,7 +210,7 @@ class SnortAlertController extends Controller
 
                 //Update Snort Alert Response Code
                 $updateSnortResponseCode = SnortAlert::find($snortId);
-                $updateSnortResponseCode->incidentResponseStatus = 1;
+                $updateSnortResponseCode->incidentResponseStatus = $incidentResponseId;
                 $updateSnortResponseCode->incidentResponseId = $incidentResponseId;
                 $updateSnortResponseCode->update();
 
