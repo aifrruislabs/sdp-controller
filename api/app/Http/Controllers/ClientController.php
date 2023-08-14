@@ -47,12 +47,19 @@ class ClientController extends Controller
         $clientId = $request->header('clientId');
         $clientPublicIp = $request->clientPublicIp;
 
-        //Update Client Public IP
-        $updateClientIP = Client::find($clientId);
-        $updateClientIP->publicIp = $clientPublicIp;
+        //Get Client Table Id
+        $clientQId = Client::where('clientId', $clientId)->get()->toArray();
 
-        if ($updateClientIP->update()) {
-            return response()->json(array('status' => true), 201);
+        if (sizeof($clientQId) == 1) {
+            //Update Client Public IP
+            $updateClientIP = Client::find($clientQId['0']['id']);
+            $updateClientIP->publicIp = $clientPublicIp;
+
+            if ($updateClientIP->update()) {
+                return response()->json(array('status' => true), 201);
+            }else {
+                return response()->json(array('status' => false), 200);
+            }
         }else {
             return response()->json(array('status' => false), 200);
         }
