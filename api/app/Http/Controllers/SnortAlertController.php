@@ -208,6 +208,12 @@ class SnortAlertController extends Controller
                 $newClientIncident->incidentResolved = 0;     
                 $newClientIncident->save();
 
+                //Update Snort Alert Response Code
+                $updateSnortResponseCode = SnortAlert::find($snortId);
+                $updateSnortResponseCode->incidentResponseStatus = 1;
+                $updateSnortResponseCode->incidentResponseId = $incidentResponseId;
+                $updateSnortResponseCode->update();
+
             }else {
                 //Update No Policy for Attack
                 $updateSnortAlert = SnortAlert::find($snortId);
