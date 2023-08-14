@@ -184,7 +184,7 @@ class SnortAlertController extends Controller
             $snortClassId = "";
 
             foreach (getSnortClassList() as $snortClass) {
-               if ($snortClass['description'] == $snortAlertClassification) {
+               if (trim($snortClass['description']) == trim($snortAlertClassification)) {
                 $snortClassId = $snortClass['id'];
                }
             } 
