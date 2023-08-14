@@ -369,6 +369,7 @@ class ClientController extends Controller
     //checkClientIncidentsMiddleware
     public function checkClientIncidentsMiddleware($clientId, $client_public_ip)
     {
+        $return = 0;
         $clientData = Client::where('clientId', $clientId)->get()->toArray();
 
         $clientIncidents = ClientIncident::where([
@@ -377,8 +378,8 @@ class ClientController extends Controller
                         ])->get()->toArray();
 
         if (sizeof($clientIncidents) != 0) {
-            $clientScore = 0;
-
+            
+            $return = 1;
             //Terminate Client by Zero Score
             if ($clientIncidents['0']['incidentResponseId'] == 1) {
                 $clientScore = 0;
@@ -389,12 +390,9 @@ class ClientController extends Controller
                 $updateClientScore->update();
             }
 
-            return response()->json(array(
-                        'falseStatus' => 'Incident',
-                        'currentScore' => $clientScore,
-                        'status' => false), 
-                        200);
         }
+
+        return $return;
     }
 
     //gnrtEncryptionHmacKey
@@ -410,7 +408,13 @@ class ClientController extends Controller
         $client_public_ip = $request->client_public_ip;
 
         //Check for Incidents First
-        $this->checkClientIncidentsMiddleware($clientId, $client_public_ip);
+        if ($this->checkClientIncidentsMiddleware($clientId, $client_public_ip) == 1) {
+            return response()->json(array('data' => array(
+                'falseStatus' => 'Incident',
+                'currentScore' => 0,
+                'status' => false)
+            ), 200);
+        }
 
         //Get Client Data
         $clientData = Client::where('clientId', $clientId)->get()->toArray();
